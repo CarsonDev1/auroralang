@@ -1,10 +1,15 @@
 package vn.edu.fpt.AuroraLang.service;
 
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 import vn.edu.fpt.AuroraLang.dto.request.CourseRequest;
 import vn.edu.fpt.AuroraLang.dto.response.CourseResponse;
 import vn.edu.fpt.AuroraLang.entity.Course;
@@ -13,10 +18,6 @@ import vn.edu.fpt.AuroraLang.entity.User;
 import vn.edu.fpt.AuroraLang.repository.CourseCategoryRepository;
 import vn.edu.fpt.AuroraLang.repository.CourseRepository;
 import vn.edu.fpt.AuroraLang.repository.UserRepository;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -132,6 +133,14 @@ public class CourseService {
         return courseRepository.findTop10ByIsPublicAndIsActiveAndStatusOrderByTotalEnrollmentsDesc(
                 true, true, Course.Status.PUBLISHED
         ).stream().map(this::mapToCourseResponse).collect(Collectors.toList());
+    }
+    
+    public Page<CourseResponse> getAllCourses(Pageable pageable) {
+        return courseRepository.findAll(pageable).map(this::mapToCourseResponse);
+    }
+    
+    public Page<CourseResponse> searchAllCourses(String keyword, Pageable pageable) {
+        return courseRepository.searchAllCourses(keyword, pageable).map(this::mapToCourseResponse);
     }
     
     private CourseResponse mapToCourseResponse(Course course) {

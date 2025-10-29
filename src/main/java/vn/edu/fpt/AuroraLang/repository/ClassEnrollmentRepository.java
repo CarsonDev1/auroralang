@@ -1,14 +1,15 @@
 package vn.edu.fpt.AuroraLang.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import vn.edu.fpt.AuroraLang.entity.ClassEnrollment;
 
-import java.util.Optional;
+import vn.edu.fpt.AuroraLang.entity.ClassEnrollment;
 
 @Repository
 public interface ClassEnrollmentRepository extends JpaRepository<ClassEnrollment, Integer> {
@@ -21,5 +22,8 @@ public interface ClassEnrollmentRepository extends JpaRepository<ClassEnrollment
     Long countActiveByClassId(@Param("classId") Integer classId);
     
     boolean existsByUser_UserIdAndClassEntity_ClassId(Integer userId, Integer classId);
+    
+    @Query("SELECT ce FROM ClassEnrollment ce WHERE ce.classEntity.manager.userId = :managerId")
+    Page<ClassEnrollment> findByManagerId(@Param("managerId") Integer managerId, Pageable pageable);
 }
 

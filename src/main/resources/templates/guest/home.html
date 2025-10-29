@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AuroraLang - Learn Languages Online</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #667eea;
+      --secondary: #764ba2;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .navbar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+
+    .hero-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 100px 0;
+      margin-bottom: 60px;
+    }
+
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .btn-hero {
+      padding: 15px 40px;
+      font-size: 1.1rem;
+      border-radius: 50px;
+      background: white;
+      color: #667eea;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-hero:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .feature-card {
+      transition: transform 0.3s;
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+    }
+
+    .course-card {
+      transition: transform 0.3s;
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .course-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .course-thumbnail {
+      height: 200px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 3rem;
+    }
+
+    .footer {
+      background: #2c3e50;
+      color: white;
+      padding: 50px 0 20px;
+      margin-top: 80px;
+    }
+
+    .footer a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .footer a:hover {
+      color: white;
+    }
+
+    .stats-section {
+      background: #f8f9fa;
+      padding: 60px 0;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: bold;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <i class="fas fa-language me-2"></i> AuroraLang </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/courses">Courses</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/about">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contact">Contact</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/login">
+              <i class="fas fa-sign-in-alt me-1"></i> Login </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-light btn-sm ms-2" href="/auth/register">
+              <i class="fas fa-user-plus me-1"></i> Sign Up </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h1 class="hero-title">Learn Languages Online</h1>
+          <p class="hero-subtitle"> Master new languages with our interactive courses, expert teachers, and
+            comprehensive learning resources. Start your language learning journey today! </p>
+          <div class="d-flex gap-3">
+            <a href="/courses" class="btn btn-hero">
+              <i class="fas fa-book me-2"></i> Browse Courses </a>
+            <a href="/auth/register" class="btn btn-light btn-lg">
+              <i class="fas fa-user-plus me-2"></i> Get Started </a>
+          </div>
+        </div>
+        <div class="col-lg-6 text-center">
+          <i class="fas fa-graduation-cap" style="font-size: 15rem; opacity: 0.3;"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Features Section -->
+  <section class="container mb-5">
+    <div class="text-center mb-5">
+      <h2 class="display-4">Why Choose AuroraLang?</h2>
+      <p class="text-muted">Everything you need to master a new language</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card feature-card h-100 text-center p-4">
+          <div class="card-body">
+            <i class="fas fa-users feature-icon"></i>
+            <h5 class="card-title">Expert Teachers</h5>
+            <p class="card-text text-muted"> Learn from experienced and certified language teachers who are passionate
+              about teaching. </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card feature-card h-100 text-center p-4">
+          <div class="card-body">
+            <i class="fas fa-layer-group feature-icon"></i>
+            <h5 class="card-title">Interactive Flashcards</h5>
+            <p class="card-text text-muted"> Master vocabulary with our interactive flashcards, matching games, and
+              study modes. </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card feature-card h-100 text-center p-4">
+          <div class="card-body">
+            <i class="fas fa-chart-line feature-icon"></i>
+            <h5 class="card-title">Track Progress</h5>
+            <p class="card-text text-muted"> Monitor your learning progress with detailed analytics and personalized
+              insights. </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card feature-card h-100 text-center p-4">
+          <div class="card-body">
+            <i class="fas fa-calendar-alt feature-icon"></i>
+            <h5 class="card-title">Flexible Schedule</h5>
+            <p class="card-text text-muted"> Learn at your own pace with flexible scheduling and self-paced courses.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card feature-card h-100 text-center p-4">
+          <div class="card-body">
+            <i class="fas fa-certificate feature-icon"></i>
+            <h5 class="card-title">Certificates</h5>
+            <p class="card-text text-muted"> Earn certificates upon course completion to showcase your language skills.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card feature-card h-100 text-center p-4">
+          <div class="card-body">
+            <i class="fas fa-headset feature-icon"></i>
+            <h5 class="card-title">24/7 Support</h5>
+            <p class="card-text text-muted"> Get help whenever you need it with our dedicated support team. </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-3">
+          <div class="stat-number">1000+</div>
+          <p class="text-muted">Students</p>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-number">50+</div>
+          <p class="text-muted">Courses</p>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-number">100+</div>
+          <p class="text-muted">Teachers</p>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-number">98%</div>
+          <p class="text-muted">Satisfaction</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Popular Courses Section -->
+  <section class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="display-5">Popular Courses</h2>
+        <p class="text-muted">Start with our most popular language courses</p>
+      </div>
+      <a href="/courses" class="btn btn-outline-primary">View All Courses</a>
+    </div>
+    <div class="row g-4" id="popularCourses">
+      <div class="col-12 text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <h5><i class="fas fa-language me-2"></i>AuroraLang</h5>
+          <p class="text-muted"> Your trusted partner in language learning. Master new languages with interactive
+            courses, expert teachers, and comprehensive resources. </p>
+          <div class="d-flex gap-3 mt-3">
+            <a href="#"><i class="fab fa-facebook fa-2x"></i></a>
+            <a href="#"><i class="fab fa-twitter fa-2x"></i></a>
+            <a href="#"><i class="fab fa-instagram fa-2x"></i></a>
+            <a href="#"><i class="fab fa-linkedin fa-2x"></i></a>
+          </div>
+        </div>
+        <div class="col-md-2 mb-4">
+          <h6>Quick Links</h6>
+          <ul class="list-unstyled">
+            <li><a href="/courses">Courses</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/auth/login">Login</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 mb-4">
+          <h6>Support</h6>
+          <ul class="list-unstyled">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 mb-4">
+          <h6>Contact Us</h6>
+          <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-envelope me-2"></i>info@auroralang.com</li>
+            <li><i class="fas fa-phone me-2"></i>+1 (555) 123-4567</li>
+            <li><i class="fas fa-map-marker-alt me-2"></i>123 Learning St, Education City</li>
+          </ul>
+        </div>
+      </div>
+      <hr class="bg-secondary">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <p class="text-muted mb-0">&copy; 2025 AuroraLang. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      loadPopularCourses();
+    });
+
+    async function loadPopularCourses() {
+      try {
+        const response = await fetch('/api/courses/public?size=3');
+        if (response.ok) {
+          const result = await response.json();
+          const courses = result.data.content;
+          displayPopularCourses(courses);
+        } else {
+          document.getElementById('popularCourses').innerHTML = `
+                        <div class="col-12 text-center text-muted">
+                            <p>Unable to load courses. <a href="/courses">Browse all courses</a></p>
+                        </div>
+                    `;
+        }
+      } catch (error) {
+        console.error('Error loading courses:', error);
+        document.getElementById('popularCourses').innerHTML = `
+                    <div class="col-12 text-center text-muted">
+                        <p>Unable to load courses. <a href="/courses">Browse all courses</a></p>
+                    </div>
+                `;
+      }
+    }
+
+    function displayPopularCourses(courses) {
+      const container = document.getElementById('popularCourses');
+
+      if (courses.length === 0) {
+        container.innerHTML = `
+                    <div class="col-12 text-center text-muted">
+                        <p>No courses available. Check back soon!</p>
+                    </div>
+                `;
+        return;
+      }
+
+      container.innerHTML = courses.map(course => `
+                <div class="col-md-4">
+                    <div class="card course-card h-100">
+                        <div class="course-thumbnail">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">${course.courseName}</h5>
+                            <p class="card-text text-muted">${course.description ? course.description.substring(0, 100) + '...' : 'No description'}</p>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge bg-primary">${course.level || 'Beginner'}</span>
+                                <span class="text-muted">${course.durationWeeks || 0} weeks</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="text-primary">$${course.price || 0}</strong>
+                                <a href="/courses/${course.courseId}" class="btn btn-primary btn-sm">
+                                    View Course <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+    }
+  </script>
+</body>
+
+</html>

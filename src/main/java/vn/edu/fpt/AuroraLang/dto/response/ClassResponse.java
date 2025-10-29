@@ -1,21 +1,20 @@
 package vn.edu.fpt.AuroraLang.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 
+import lombok.Data;
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class ClassResponse {
     private Integer classId;
     private String classCode;
     private String className;
     private String description;
+    private Integer courseId;
     private String courseName;
+    private Integer teacherId;
     private String teacherName;
+    private Integer managerId;
     private String managerName;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -26,4 +25,3 @@ public class ClassResponse {
     private String status;
     private Boolean isPublic;
 }
-

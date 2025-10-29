@@ -26,5 +26,5 @@ public class FlashcardRequest {
     private String difficulty; // EASY, MEDIUM, HARD
     private String tags;
     private Boolean isPublic;
+    private Integer courseId;
 }
-

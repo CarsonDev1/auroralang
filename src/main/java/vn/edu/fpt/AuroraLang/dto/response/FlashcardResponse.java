@@ -1,12 +1,10 @@
 package vn.edu.fpt.AuroraLang.dto.response;
 
-import lombok.AllArgsConstructor;
+import java.time.LocalDateTime;
+
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class FlashcardResponse {
     private Integer flashcardId;
     private String frontText;
@@ -21,5 +19,9 @@ public class FlashcardResponse {
     private String difficulty;
     private String tags;
     private Boolean isPublic;
+    private Integer courseId;
+    private String courseName;
+    private Integer userId;
+    private String userName;
+    private LocalDateTime createdAt;
 }
-

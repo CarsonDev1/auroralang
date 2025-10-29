@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Payment - AuroraLang</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .navbar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+
+    .payment-hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px 0;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      padding: 15px 40px;
+      font-size: 1.1rem;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    }
+
+    .payment-method-card {
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .payment-method-card:hover {
+      border-color: #667eea;
+      background: #f8f9fa;
+    }
+
+    .payment-method-card.selected {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .footer {
+      background: #2c3e50;
+      color: white;
+      padding: 50px 0 20px;
+      margin-top: 80px;
+    }
+
+    .footer a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      color: white;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <i class="fas fa-language me-2"></i> AuroraLang </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/courses">Courses</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/about">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contact">Contact</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/login">
+              <i class="fas fa-sign-in-alt me-1"></i> Login </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-light btn-sm ms-2" href="/auth/register">
+              <i class="fas fa-user-plus me-1"></i> Sign Up </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- Hero -->
+  <section class="payment-hero">
+    <div class="container text-center">
+      <h1 class="display-5 mb-2">Complete Your Purchase</h1>
+      <p class="lead">Secure payment processing</p>
+    </div>
+  </section>
+  <div class="container py-4">
+    <a th:href="@{'/courses/' + ${courseId}}" class="btn btn-outline-secondary mb-4">
+      <i class="fas fa-arrow-left me-2"></i>Back to Course </a>
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>Payment Information</h5>
+          </div>
+          <div class="card-body p-4">
+            <form id="paymentForm">
+              <div class="mb-4">
+                <label class="form-label fw-bold mb-3">Select Payment Method</label>
+                <div class="payment-method-card selected" data-method="credit_card">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard"
+                      value="credit_card" checked>
+                    <label class="form-check-label w-100" for="creditCard">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-credit-card me-2"></i>Credit/Debit Card</span>
+                        <span class="text-muted small">Visa, Mastercard, Amex</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+                <div class="payment-method-card" data-method="paypal">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" value="paypal">
+                    <label class="form-check-label w-100" for="paypal">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span><i class="fab fa-paypal me-2"></i>PayPal</span>
+                        <span class="text-muted small">Pay with PayPal account</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+                <div class="payment-method-card" data-method="bank_transfer">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="bankTransfer"
+                      value="bank_transfer">
+                    <label class="form-check-label w-100" for="bankTransfer">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-university me-2"></i>Bank Transfer</span>
+                        <span class="text-muted small">Direct bank transfer</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div id="creditCardFields">
+                <h6 class="mb-3">Card Details</h6>
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label">Card Number</label>
+                    <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456"
+                      maxlength="19" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Expiry Date</label>
+                    <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" maxlength="5" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">CVV</label>
+                    <input type="text" class="form-control" id="cvv" placeholder="123" maxlength="4" required>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Cardholder Name</label>
+                    <input type="text" class="form-control" id="cardholderName" placeholder="John Doe" required>
+                  </div>
+                </div>
+              </div>
+              <div id="paypalFields" style="display: none;">
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle me-2"></i> You will be redirected to PayPal to complete your payment.
+                </div>
+              </div>
+              <div id="bankTransferFields" style="display: none;">
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle me-2"></i> You will receive bank transfer details after submitting your
+                  order.
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Account Holder Name</label>
+                  <input type="text" class="form-control" id="accountHolder" placeholder="Your Full Name">
+                </div>
+              </div>
+              <div class="form-check mt-4 mb-3">
+                <input class="form-check-input" type="checkbox" id="agreePayment" required>
+                <label class="form-check-label" for="agreePayment"> I agree to the <a href="#">Terms and Conditions</a>
+                  and confirm this purchase </label>
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg w-100">
+                <i class="fas fa-lock me-2"></i>Complete Payment </button>
+            </form>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body p-4">
+            <h6 class="mb-3"><i class="fas fa-shield-alt me-2"></i>Secure Payment</h6>
+            <p class="text-muted small mb-0"> Your payment information is encrypted and secure. We use industry-standard
+              SSL encryption to protect your data. Your credit card information will never be stored on our servers.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card sticky-top" style="top: 20px;">
+          <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Order Summary</h5>
+          </div>
+          <div class="card-body">
+            <div class="summary-item">
+              <span>Course:</span>
+              <span id="courseName" class="fw-bold">Loading...</span>
+            </div>
+            <div class="summary-item">
+              <span>Level:</span>
+              <span id="courseLevel">-</span>
+            </div>
+            <div class="summary-item">
+              <span>Duration:</span>
+              <span id="courseDuration">-</span>
+            </div>
+            <hr>
+            <div class="summary-item">
+              <span>Original Price:</span>
+              <span id="originalPrice">$0.00</span>
+            </div>
+            <div class="summary-item" id="discountRow" style="display: none;">
+              <span class="text-success">Discount:</span>
+              <span id="discount" class="text-success">-$0.00</span>
+            </div>
+            <hr>
+            <div class="summary-item">
+              <span class="h5">Total:</span>
+              <span id="totalPrice" class="h4 text-primary">$0.00</span>
+            </div>
+            <div class="mt-3 text-center">
+              <small class="text-muted">
+                <i class="fas fa-shield-alt me-1"></i>30-day money-back guarantee </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <h5><i class="fas fa-language me-2"></i>AuroraLang</h5>
+          <p class="text-muted">Your trusted partner in language learning. Master new languages with interactive
+            courses, expert teachers, and comprehensive resources.</p>
+        </div>
+        <div class="col-md-2 mb-4">
+          <h6>Quick Links</h6>
+          <ul class="list-unstyled">
+            <li><a href="/courses">Courses</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/auth/login">Login</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 mb-4">
+          <h6>Support</h6>
+          <ul class="list-unstyled">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 mb-4">
+          <h6>Contact Us</h6>
+          <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-envelope me-2"></i>info@auroralang.com</li>
+            <li><i class="fas fa-phone me-2"></i>+1 (555) 123-4567</li>
+            <li><i class="fas fa-map-marker-alt me-2"></i>123 Learning St, Education City</li>
+          </ul>
+        </div>
+      </div>
+      <hr class="bg-secondary">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <p class="text-muted mb-0">&copy; 2025 AuroraLang. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:inline="javascript">
+    const courseId = /*[[${courseId}]]*/ 0;
+
+    // Payment method selection
+    document.querySelectorAll('.payment-method-card').forEach(card => {
+      card.addEventListener('click', function () {
+        document.querySelectorAll('.payment-method-card').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+        const method = this.dataset.method;
+        document.getElementById(method).checked = true;
+        updatePaymentFields();
+      });
+
+      const radio = card.querySelector('input[type="radio"]');
+      radio.addEventListener('change', updatePaymentFields);
+    });
+
+    function updatePaymentFields() {
+      const method = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+      document.getElementById('creditCardFields').style.display = method === 'credit_card' ? 'block' : 'none';
+      document.getElementById('paypalFields').style.display = method === 'paypal' ? 'block' : 'none';
+      document.getElementById('bankTransferFields').style.display = method === 'bank_transfer' ? 'block' : 'none';
+
+      // Update required fields
+      document.getElementById('cardNumber').required = method === 'credit_card';
+      document.getElementById('expiryDate').required = method === 'credit_card';
+      document.getElementById('cvv').required = method === 'credit_card';
+      document.getElementById('cardholderName').required = method === 'credit_card';
+    }
+
+    async function loadCourse() {
+      try {
+        const res = await fetch(`/api/courses/public/${courseId}`);
+        const json = await res.json();
+        if (!json.success) {
+          alert('Course not found');
+          window.location.href = '/courses';
+          return;
+        }
+        const course = json.data;
+
+        document.getElementById('courseName').textContent = course.courseName || 'Course';
+        document.getElementById('courseLevel').textContent = course.level || 'Beginner';
+        document.getElementById('courseDuration').textContent = course.durationWeeks || 0;
+
+        const originalPrice = course.price || 0;
+        const discountPrice = course.discountPrice || 0;
+        const discount = originalPrice - discountPrice;
+        const total = discountPrice > 0 ? discountPrice : originalPrice;
+
+        document.getElementById('originalPrice').textContent = '$' + originalPrice.toFixed(2);
+        if (discount > 0) {
+          document.getElementById('discountRow').style.display = 'flex';
+          document.getElementById('discount').textContent = '-$' + discount.toFixed(2);
+        }
+        document.getElementById('totalPrice').textContent = '$' + total.toFixed(2);
+      } catch (error) {
+        console.error('Error loading course:', error);
+      }
+    }
+
+    document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!document.getElementById('agreePayment').checked) {
+        alert('Please agree to the terms and conditions');
+        return;
+      }
+
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+
+      // Simulate payment processing
+      setTimeout(() => {
+        // In real app, this would call payment API
+        alert('Payment successful! You are now enrolled in the course.');
+        // After payment, enroll user
+        fetch(`/api/enrollments/courses/${courseId}`, {
+          method: 'POST',
+          credentials: 'include'
+        }).then(() => {
+          window.location.href = '/student/courses';
+        }).catch(() => {
+          window.location.href = '/student/courses';
+        });
+      }, 2000);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCourse();
+      updatePaymentFields();
+    });
+  </script>
+</body>
+
+</html>

@@ -55,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**", "/api/public/**").permitAll()
                         .requestMatchers("/api/debug/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
+                        .requestMatchers("/api/select/**").hasAnyRole("MANAGER", "ADMIN", "EXPERT", "TEACHER")
 
                         // ✅ Role-based API Access
                         .requestMatchers("/api/student/**")

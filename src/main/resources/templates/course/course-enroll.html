@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enroll Course - AuroraLang</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .navbar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+
+    .enroll-hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px 0;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      padding: 15px 40px;
+      font-size: 1.1rem;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    }
+
+    .benefit-item {
+      display: flex;
+      align-items-center;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .benefit-item i {
+      color: #667eea;
+      font-size: 1.5rem;
+      margin-right: 1rem;
+    }
+
+    .footer {
+      background: #2c3e50;
+      color: white;
+      padding: 50px 0 20px;
+      margin-top: 80px;
+    }
+
+    .footer a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <i class="fas fa-language me-2"></i> AuroraLang </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/courses">Courses</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/about">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contact">Contact</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/login">
+              <i class="fas fa-sign-in-alt me-1"></i> Login </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-light btn-sm ms-2" href="/auth/register">
+              <i class="fas fa-user-plus me-1"></i> Sign Up </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- Hero -->
+  <section class="enroll-hero">
+    <div class="container text-center">
+      <h1 class="display-5 mb-2">Enroll in Course</h1>
+      <p class="lead">Join thousands of students learning with AuroraLang</p>
+    </div>
+  </section>
+  <div class="container py-4">
+    <a th:href="@{'/courses/' + ${courseId}}" class="btn btn-outline-secondary mb-4">
+      <i class="fas fa-arrow-left me-2"></i>Back to Course Details </a>
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-body p-4">
+            <div id="alert" class="alert d-none" role="alert"></div>
+            <h3 class="mb-4">Confirm Enrollment</h3>
+            <p class="lead text-muted mb-4"> You are about to enroll in: <strong id="courseName">Loading...</strong>
+            </p>
+            <p class="mb-4"> By enrolling in this course, you will gain access to all course materials, lessons, and
+              resources. You can access the course anytime from your dashboard. </p>
+            <div class="mb-4">
+              <h5 class="mb-3">What's included:</h5>
+              <div class="benefit-item">
+                <i class="fas fa-play-circle"></i>
+                <div>
+                  <strong>All Lessons</strong>
+                  <p class="text-muted mb-0 small">Access to all course lessons and materials</p>
+                </div>
+              </div>
+              <div class="benefit-item">
+                <i class="fas fa-layer-group"></i>
+                <div>
+                  <strong>Interactive Flashcards</strong>
+                  <p class="text-muted mb-0 small">Study with our interactive flashcard system</p>
+                </div>
+              </div>
+              <div class="benefit-item">
+                <i class="fas fa-clipboard-check"></i>
+                <div>
+                  <strong>Quizzes & Tests</strong>
+                  <p class="text-muted mb-0 small">Practice with quizzes and assessments</p>
+                </div>
+              </div>
+              <div class="benefit-item">
+                <i class="fas fa-certificate"></i>
+                <div>
+                  <strong>Certificate</strong>
+                  <p class="text-muted mb-0 small">Earn a certificate upon completion</p>
+                </div>
+              </div>
+              <div class="benefit-item">
+                <i class="fas fa-headset"></i>
+                <div>
+                  <strong>24/7 Support</strong>
+                  <p class="text-muted mb-0 small">Get help whenever you need it</p>
+                </div>
+              </div>
+            </div>
+            <div class="form-check mb-4">
+              <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+              <label class="form-check-label" for="agreeTerms"> I agree to the <a href="#">Terms and Conditions</a> and
+                <a href="#">Privacy Policy</a>
+              </label>
+            </div>
+            <button id="enrollBtn" class="btn btn-primary btn-lg w-100">
+              <i class="fas fa-check-circle me-2"></i>Confirm Enrollment </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="mb-3">Course Summary</h5>
+            <div class="mb-3">
+              <strong>Course:</strong><br>
+              <span id="courseNameSummary">-</span>
+            </div>
+            <div class="mb-3">
+              <strong>Level:</strong><br>
+              <span id="courseLevel">-</span>
+            </div>
+            <div class="mb-3">
+              <strong>Duration:</strong><br>
+              <span id="courseDuration">-</span> weeks
+            </div>
+            <div class="mb-3">
+              <strong>Price:</strong><br>
+              <span id="coursePrice" class="h5 text-primary">Free</span>
+            </div>
+            <hr>
+            <div class="text-center">
+              <small class="text-muted">
+                <i class="fas fa-shield-alt me-1"></i>30-day money-back guarantee </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <h5><i class="fas fa-language me-2"></i>AuroraLang</h5>
+          <p class="text-muted">Your trusted partner in language learning. Master new languages with interactive
+            courses, expert teachers, and comprehensive resources.</p>
+        </div>
+        <div class="col-md-2 mb-4">
+          <h6>Quick Links</h6>
+          <ul class="list-unstyled">
+            <li><a href="/courses">Courses</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/auth/login">Login</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 mb-4">
+          <h6>Support</h6>
+          <ul class="list-unstyled">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 mb-4">
+          <h6>Contact Us</h6>
+          <ul class="list-unstyled text-muted">
+            <li><i class="fas fa-envelope me-2"></i>info@auroralang.com</li>
+            <li><i class="fas fa-phone me-2"></i>+1 (555) 123-4567</li>
+            <li><i class="fas fa-map-marker-alt me-2"></i>123 Learning St, Education City</li>
+          </ul>
+        </div>
+      </div>
+      <hr class="bg-secondary">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <p class="text-muted mb-0">&copy; 2025 AuroraLang. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:inline="javascript">
+    const courseId = /*[[${courseId}]]*/ 0;
+
+    function showAlert(type, message) {
+      const alertEl = document.getElementById('alert');
+      alertEl.className = `alert alert-${type}`;
+      alertEl.textContent = message;
+      alertEl.classList.remove('d-none');
+
+      setTimeout(() => {
+        alertEl.classList.add('d-none');
+      }, 5000);
+    }
+
+    async function loadCourse() {
+      try {
+        const res = await fetch(`/api/courses/public/${courseId}`);
+        const json = await res.json();
+        if (!json.success) {
+          showAlert('danger', 'Course not found');
+          return;
+        }
+        const c = json.data;
+
+        document.getElementById('courseName').textContent = c.courseName || 'Course';
+        document.getElementById('courseNameSummary').textContent = c.courseName || 'Course';
+        document.getElementById('courseLevel').textContent = c.level || 'Beginner';
+        document.getElementById('courseDuration').textContent = c.durationWeeks || 0;
+
+        const price = c.price || 0;
+        if (price > 0) {
+          document.getElementById('coursePrice').textContent = '$' + price.toFixed(2);
+          // If course has price, redirect to payment instead
+          document.getElementById('enrollBtn').onclick = () => {
+            window.location.href = `/courses/${courseId}/payment`;
+          };
+        } else {
+          document.getElementById('coursePrice').textContent = 'Free';
+        }
+      } catch (error) {
+        console.error('Error loading course:', error);
+        showAlert('danger', 'Error loading course information');
+      }
+    }
+
+    document.getElementById('enrollBtn').addEventListener('click', async () => {
+      const agreeTerms = document.getElementById('agreeTerms').checked;
+      if (!agreeTerms) {
+        showAlert('warning', 'Please agree to the terms and conditions');
+        return;
+      }
+
+      const btn = document.getElementById('enrollBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+
+      try {
+        const res = await fetch(`/api/enrollments/courses/${courseId}`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+        const json = await res.json();
+
+        if (!json.success) {
+          if (res.status === 401) {
+            showAlert('warning', 'Please login to enroll in courses');
+            setTimeout(() => {
+              window.location.href = '/auth/login';
+            }, 2000);
+          } else {
+            throw new Error(json.message || 'Enrollment failed');
+          }
+        } else {
+          showAlert('success', 'Successfully enrolled! Redirecting to dashboard...');
+          setTimeout(() => {
+            window.location.href = '/student/courses';
+          }, 2000);
+        }
+      } catch (error) {
+        showAlert('danger', error.message || 'Failed to enroll. Please try again.');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle me-2"></i>Confirm Enrollment';
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', loadCourse);
+  </script>
+</body>
+
+</html>

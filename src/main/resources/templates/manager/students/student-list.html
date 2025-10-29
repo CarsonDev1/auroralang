@@ -1,1 +1,83 @@
-<!-- Manager Student List Page -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manager | Students</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+</head>
+
+<body>
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="mb-0">Students</h3>
+      <a class="btn btn-primary" href="/manager/students/new">New Student</a>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Class</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <nav>
+      <ul id="pager" class="pagination"></ul>
+    </nav>
+  </div>
+  <script>
+    async function load(page = 0, size = 10) {
+      const url = new URL('/api/manager/students', window.location.origin);
+      url.searchParams.set('page', page);
+      url.searchParams.set('size', size);
+      const res = await fetch(url, { credentials: 'include' });
+      const json = await res.json();
+      if (!json.success) { console.error(json.message); return; }
+      const p = json.data;
+      const tbody = document.getElementById('tbody');
+      tbody.innerHTML = (p.content || []).map(s => `
+        <tr>
+          <td>${s.userId}</td>
+          <td>${s.username || ''}</td>
+          <td>${s.fullName || ''}</td>
+          <td>${s.email || ''}</td>
+          <td><a href="/manager/classes/${s.classId}">${s.className || ''}</a></td>
+          <td><span class="badge ${statusBadge(s.status)}">${s.status || ''}</span></td>
+          <td><a class="btn btn-sm btn-outline-primary" href="/manager/students/${s.userId}">View</a></td>
+        </tr>`).join('');
+      renderPager(p);
+    }
+    function renderPager(p) {
+      const ul = document.getElementById('pager');
+      ul.innerHTML = '';
+      for (let i = 0; i < (p?.totalPages || 0); i++) {
+        const li = document.createElement('li');
+        li.className = 'page-item' + (i === p.page ? ' active' : '');
+        li.innerHTML = `<a class="page-link" href="#">${i + 1}</a>`;
+        li.addEventListener('click', (e) => { e.preventDefault(); load(i); });
+        ul.appendChild(li);
+      }
+    }
+    function statusBadge(status) {
+      switch ((status || '').toUpperCase()) {
+        case 'ACTIVE': return 'text-bg-success';
+        case 'COMPLETED': return 'text-bg-secondary';
+        case 'DROPPED': return 'text-bg-danger';
+        case 'SUSPENDED': return 'text-bg-warning';
+        default: return 'text-bg-light';
+      }
+    }
+    document.addEventListener('DOMContentLoaded', () => load());
+  </script>
+</body>
+
+</html>

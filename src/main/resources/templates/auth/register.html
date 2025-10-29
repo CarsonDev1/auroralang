@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Register - AuroraLang</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .card {
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .password-toggle {
+      cursor: pointer;
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+    }
+
+    .invalid-feedback {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-5">
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <h3 class="text-center mb-4">Create Account</h3>
+            <div id="alertBox" class="alert d-none"></div>
+            <form id="registerForm" novalidate>
+              <!-- Full Name -->
+              <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                <input id="fullName" class="form-control" required />
+                <div id="nameError" class="invalid-feedback"></div>
+              </div>
+              <!-- Email -->
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input id="email" type="email" class="form-control" required />
+                <div id="emailError" class="invalid-feedback"></div>
+              </div>
+              <!-- Username -->
+              <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input id="username" class="form-control" required />
+                <div id="usernameError" class="invalid-feedback"></div>
+              </div>
+              <!-- Password -->
+              <div class="mb-3 position-relative">
+                <label class="form-label">Password</label>
+                <input id="password" type="password" class="form-control" required />
+                <i id="togglePassword" class="bi bi-eye password-toggle"></i>
+                <div id="passwordError" class="invalid-feedback"></div>
+              </div>
+              <button class="btn btn-primary w-100" type="submit">Register</button>
+            </form>
+            <p class="text-center mt-3"> Already have an account? <a href="/auth/login">Login here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Bootstrap + Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script>
+    const fullNameInput = document.getElementById("fullName");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+
+    const nameError = document.getElementById("nameError");
+    const emailError = document.getElementById("emailError");
+    const passwordError = document.getElementById("passwordError");
+    const usernameError = document.getElementById("usernameError");
+    const alertBox = document.getElementById("alertBox");
+
+    // 👁 Toggle password visibility
+    document.getElementById("togglePassword").addEventListener("click", function () {
+      const type = passwordInput.type === "password" ? "text" : "password";
+      passwordInput.type = type;
+      this.classList.toggle("bi-eye-slash");
+    });
+
+    // 🧠 Validation functions
+    function validateFullName(name) {
+      const regex = /^[A-Za-zÀ-ỹ]+(?: [A-Za-zÀ-ỹ]+)*$/;
+      if (name.length < 5 || name.length > 30)
+        return "Full name must be 5–30 characters.";
+      if (!regex.test(name))
+        return "Full name must not contain numbers or special characters.";
+      if (/\s{2,}/.test(name))
+        return "Only one space allowed between words.";
+      return "";
+    }
+
+    function validateEmail(email) {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (email.length > 40)
+        return "Email must be less than 40 characters.";
+      if (!regex.test(email))
+        return "Invalid email format.";
+      return "";
+    }
+
+    function validatePassword(password) {
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$/;
+      if (!regex.test(password))
+        return "Password must be 8–12 characters, include uppercase, lowercase, number, and special character.";
+      if (/\s/.test(password))
+        return "Password cannot contain spaces.";
+      return "";
+    }
+
+    function validateUsername(username) {
+      if (username.length < 3 || username.length > 100)
+        return "Username must be 3–100 characters.";
+      return "";
+    }
+
+    async function emailExists(email) {
+      // Nếu backend có API check email, ví dụ: /api/auth/check-email
+      // const res = await fetch(`/api/auth/check-email?email=${email}`);
+      // const data = await res.json();
+      // return data.exists;
+      // Tạm giả lập:
+      return false;
+    }
+
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // Reset lỗi
+      nameError.textContent = "";
+      emailError.textContent = "";
+      passwordError.textContent = "";
+      usernameError.textContent = "";
+      const fullName = fullNameInput.value.trim();
+      const email = emailInput.value.trim();
+      const username = document.getElementById("username").value.trim();
+      const password = passwordInput.value;
+
+      let hasError = false;
+
+      // Validate fullname
+      const nameValidation = validateFullName(fullName);
+      if (nameValidation) {
+        nameError.textContent = nameValidation;
+        hasError = true;
+      }
+
+      // Validate email
+      const emailValidation = validateEmail(email);
+      if (emailValidation) {
+        emailError.textContent = emailValidation;
+        hasError = true;
+      } else if (await emailExists(email)) {
+        emailError.textContent = "Email is already registered.";
+        hasError = true;
+      }
+
+      // Validate password
+      const passwordValidation = validatePassword(password);
+      if (passwordValidation) {
+        passwordError.textContent = passwordValidation;
+        hasError = true;
+      }
+
+      // Validate username
+      const usernameValidation = validateUsername(username);
+      if (usernameValidation) {
+        usernameError.textContent = usernameValidation;
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      const payload = { fullName, email, username, password };
+
+      try {
+        const response = await fetch("/auth/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alertBox.className = "alert alert-success";
+          alertBox.innerText = "Register successful! Redirecting...";
+          alertBox.classList.remove("d-none");
+          setTimeout(() => window.location.href = "/auth/login", 1500);
+        } else {
+          alertBox.className = "alert alert-danger";
+          alertBox.innerText = data.message || "Register failed!";
+          alertBox.classList.remove("d-none");
+        }
+      } catch (err) {
+        alertBox.className = "alert alert-danger";
+        alertBox.innerText = "Server error. Please try again.";
+        alertBox.classList.remove("d-none");
+      }
+    });
+  </script>
+</body>
+
+</html>

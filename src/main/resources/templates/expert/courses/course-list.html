@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách khóa học - Expert</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-globe-americas me-2"></i>
+                AuroraLang
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/expert/dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-book me-1"></i>
+                            Khóa học
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item active" href="/expert/courses/course-list">Danh sách khóa học</a></li>
+                            <li><a class="dropdown-item" href="/expert/courses/course-create">Tạo khóa học mới</a></li>
+                            <li><a class="dropdown-item" href="/expert/courses/course-settings">Cài đặt khóa học</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-play-circle me-1"></i>
+                            Bài học
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/expert/lessons/lesson-list">Danh sách bài học</a></li>
+                            <li><a class="dropdown-item" href="/expert/lessons/lesson-create">Tạo bài học mới</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-cards-blank me-1"></i>
+                            Flashcards
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/expert/flashcards/flashcard-list">Danh sách flashcards</a></li>
+                            <li><a class="dropdown-item" href="/expert/flashcards/flashcard-create">Tạo flashcard mới</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-question-circle me-1"></i>
+                            Câu hỏi
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/expert/questions/question-bank">Ngân hàng câu hỏi</a></li>
+                            <li><a class="dropdown-item" href="/expert/questions/question-create">Tạo câu hỏi mới</a></li>
+                            <li><a class="dropdown-item" href="/expert/questions/question-import">Import câu hỏi</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-clipboard-list me-1"></i>
+                            Bài kiểm tra
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/expert/tests/test-list">Danh sách bài kiểm tra</a></li>
+                            <li><a class="dropdown-item" href="/expert/tests/test-create">Tạo bài kiểm tra mới</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>
+                            Expert User
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/profile">Hồ sơ cá nhân</a></li>
+                            <li><a class="dropdown-item" href="/settings">Cài đặt</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-book me-2"></i>
+                            Quản lý khóa học
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <a href="/expert/courses/course-list" class="list-group-item list-group-item-action active">
+                                <i class="fas fa-list me-2"></i>
+                                Danh sách khóa học
+                            </a>
+                            <a href="/expert/courses/course-create" class="list-group-item list-group-item-action">
+                                <i class="fas fa-plus me-2"></i>
+                                Tạo khóa học mới
+                            </a>
+                            <a href="/expert/courses/course-settings" class="list-group-item list-group-item-action">
+                                <i class="fas fa-cog me-2"></i>
+                                Cài đặt khóa học
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-lg-9">
+                <!-- Page Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="text-gradient mb-0">Danh sách khóa học</h2>
+                        <p class="text-muted">Quản lý các khóa học của bạn</p>
+                    </div>
+                    <a href="/expert/courses/course-create" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>
+                        Tạo khóa học mới
+                    </a>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-4 mb-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Tìm kiếm khóa học..." id="searchInput">
+                                    <button class="btn btn-outline-primary" type="button" id="searchBtn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 mb-3">
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">Tất cả trạng thái</option>
+                                    <option value="DRAFT">Bản nháp</option>
+                                    <option value="PUBLISHED">Đã xuất bản</option>
+                                    <option value="ARCHIVED">Đã lưu trữ</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-3 mb-3">
+                                <select class="form-select" id="levelFilter">
+                                    <option value="">Tất cả trình độ</option>
+                                    <option value="BEGINNER">Cơ bản</option>
+                                    <option value="ELEMENTARY">Sơ cấp</option>
+                                    <option value="INTERMEDIATE">Trung cấp</option>
+                                    <option value="ADVANCED">Cao cấp</option>
+                                    <option value="EXPERT">Chuyên gia</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2 mb-3">
+                                <button class="btn btn-outline-secondary w-100" id="clearFilters">
+                                    <i class="fas fa-times me-1"></i>
+                                    Xóa bộ lọc
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Courses Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>
+                            Khóa học của tôi
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Tên khóa học</th>
+                                        <th>Trình độ</th>
+                                        <th>Trạng thái</th>
+                                        <th>Học viên</th>
+                                        <th>Giá</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="course : ${courses}">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="course-thumbnail me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                                                    <i class="fas fa-book"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0" th:text="${course.courseName}">Tên khóa học</h6>
+                                                    <small class="text-muted" th:text="${course.description}">Mô tả ngắn</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info" th:text="${course.level}">BEGINNER</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge" th:classappend="${course.status == 'PUBLISHED'} ? 'bg-success' : (course.status == 'DRAFT') ? 'bg-warning' : 'bg-secondary'" th:text="${course.status}">DRAFT</span>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold" th:text="${course.totalEnrollments}">0</span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${course.price != null and course.price > 0}" th:text="${#numbers.formatDecimal(course.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</span>
+                                            <span th:if="${course.price == null or course.price == 0}" class="text-success">Miễn phí</span>
+                                        </td>
+                                        <td th:text="${#temporals.format(course.createdAt, 'dd/MM/yyyy')}">01/01/2024</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a th:href="@{/expert/courses/course-edit/{id}(id=${course.courseId})}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a th:href="@{/courses/{id}(id=${course.courseId})}" class="btn btn-sm btn-outline-info" target="_blank">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <button class="btn btn-sm btn-outline-danger" onclick="deleteCourse([[${course.courseId}]])">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <nav aria-label="Courses pagination" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">Trước</a>
+                                </li>
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">1</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">2</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">3</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Sau</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/api.js"></script>
+    <script>
+        // Search functionality
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            const searchTerm = document.getElementById('searchInput').value;
+            // Implement search logic
+            console.log('Searching for:', searchTerm);
+        });
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('searchBtn').click();
+            }
+        });
+
+        // Filter functionality
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            // Implement filter logic
+            console.log('Status filter:', this.value);
+        });
+
+        document.getElementById('levelFilter').addEventListener('change', function() {
+            // Implement filter logic
+            console.log('Level filter:', this.value);
+        });
+
+        // Clear filters
+        document.getElementById('clearFilters').addEventListener('click', function() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').selectedIndex = 0;
+            document.getElementById('levelFilter').selectedIndex = 0;
+        });
+
+        // Delete course
+        function deleteCourse(courseId) {
+            if (confirm('Bạn có chắc chắn muốn xóa khóa học này?')) {
+                // Implement delete logic
+                console.log('Deleting course:', courseId);
+            }
+        }
+    </script>
+</body>
+</html>

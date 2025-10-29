@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>System Settings | AuroraLang Admin</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+</head>
+
+<body>
+  <div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>System Settings</h2>
+      <a class="btn btn-success" href="#" data-bs-toggle="modal" data-bs-target="#createSettingModal">+ Add Setting</a>
+    </div>
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Key</th>
+          <th>Value</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="settingsTableBody">
+      </tbody>
+    </table>
+    <div class="modal fade" id="createSettingModal" tabindex="-1" aria-labelledby="createSettingModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <form class="modal-content" id="createSettingForm">
+          <div class="modal-header">
+            <h5 class="modal-title" id="createSettingModalLabel">Add New Setting</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Setting Key</label>
+              <input type="text" class="form-control" name="settingKey" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Value</label>
+              <input type="text" class="form-control" name="settingValue" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Type</label>
+              <select class="form-select" name="settingType" required>
+                <option value="STRING">String</option>
+                <option value="NUMBER">Number</option>
+                <option value="BOOLEAN">Boolean</option>
+                <option value="JSON">JSON</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" name="description"></textarea>
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" name="isActive" checked />
+              <label class="form-check-label">Active</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    async function loadSettings() {
+      const res = await fetch('/api/admin/settings');
+      const json = await res.json();
+      if (!json.success) { console.error(json); return; }
+      const rows = json.data.map(s => `
+      <tr>
+        <td>${s.settingId}</td>
+        <td>${s.settingKey}</td>
+        <td class="text-truncate" style="max-width:220px">${s.settingValue ?? ''}</td>
+        <td>${s.settingType ?? ''}</td>
+        <td>${s.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}</td>
+        <td>${(s.createdAt || '').toString().replace('T', ' ').substring(0, 19)}</td>
+        <td>
+          <a class="btn btn-sm btn-outline-primary" href="/admin/settings/${s.settingId}">View</a>
+          <button class="btn btn-sm ${s.isActive ? 'btn-warning' : 'btn-success'} me-1" onclick="toggleActive(${s.settingId}, ${!s.isActive})">${s.isActive ? 'Deactivate' : 'Activate'}</button>
+          <button class="btn btn-sm btn-outline-danger" onclick="removeSetting(${s.settingId})">Delete</button>
+        </td>
+      </tr>`).join('');
+      document.getElementById('settingsTableBody').innerHTML = rows;
+    }
+    async function toggleActive(id, active) {
+      await fetch(`/api/admin/settings/${id}/${active ? 'activate' : 'deactivate'}`, { method: 'PATCH' });
+      loadSettings();
+    }
+    async function removeSetting(id) {
+      if (!confirm('Delete this setting?')) return;
+      await fetch(`/api/admin/settings/${id}`, { method: 'DELETE' });
+      loadSettings();
+    }
+    document.getElementById('createSettingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const payload = {
+        settingKey: form.settingKey.value,
+        settingValue: form.settingValue.value,
+        settingType: form.settingType.value,
+        description: form.description.value,
+        isActive: form.isActive.checked
+      };
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+      if (!json.success) { alert(json.message || 'Create failed'); return; }
+      form.reset();
+      document.querySelector('#createSettingModal .btn-close').click();
+      loadSettings();
+    });
+    loadSettings();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Expert - AuroraLang</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-globe-americas me-2"></i>
+                AuroraLang
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/expert/dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-book me-1"></i>
+                            Khóa học
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/expert/courses/course-list">Danh sách khóa học</a></li>
+                            <li><a class="dropdown-item" href="/expert/courses/course-create">Tạo khóa học mới</a></li>
+                            <li><a class="dropdown-item" href="/expert/courses/course-settings">Cài đặt khóa học</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-play-circle me-1"></i>
+                            Bài học
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/expert/lessons/lesson-list">Danh sách bài học</a></li>
+                            <li><a class="dropdown-item" href="/expert/lessons/lesson-create">Tạo bài học mới</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-cards-blank me-1"></i>
+                            Flashcards
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/expert/flashcards/flashcard-list">Danh sách flashcards</a></li>
+                            <li><a class="dropdown-item" href="/expert/flashcards/flashcard-create">Tạo flashcard mới</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-question-circle me-1"></i>
+                            Câu hỏi
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/expert/questions/question-bank">Ngân hàng câu hỏi</a></li>
+                            <li><a class="dropdown-item" href="/expert/questions/question-create">Tạo câu hỏi mới</a></li>
+                            <li><a class="dropdown-item" href="/expert/questions/question-import">Import câu hỏi</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-clipboard-list me-1"></i>
+                            Bài kiểm tra
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/expert/tests/test-list">Danh sách bài kiểm tra</a></li>
+                            <li><a class="dropdown-item" href="/expert/tests/test-create">Tạo bài kiểm tra mới</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>
+                            Expert User
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/profile">Hồ sơ cá nhân</a></li>
+                            <li><a class="dropdown-item" href="/settings">Cài đặt</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Dashboard Expert
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <a href="/expert/dashboard" class="list-group-item list-group-item-action active">
+                                <i class="fas fa-chart-pie me-2"></i>
+                                Tổng quan
+                            </a>
+                            <a href="/expert/courses/course-list" class="list-group-item list-group-item-action">
+                                <i class="fas fa-book me-2"></i>
+                                Khóa học của tôi
+                            </a>
+                            <a href="/expert/lessons/lesson-list" class="list-group-item list-group-item-action">
+                                <i class="fas fa-play-circle me-2"></i>
+                                Bài học
+                            </a>
+                            <a href="/expert/flashcards/flashcard-list" class="list-group-item list-group-item-action">
+                                <i class="fas fa-cards-blank me-2"></i>
+                                Flashcards
+                            </a>
+                            <a href="/expert/questions/question-bank" class="list-group-item list-group-item-action">
+                                <i class="fas fa-question-circle me-2"></i>
+                                Ngân hàng câu hỏi
+                            </a>
+                            <a href="/expert/tests/test-list" class="list-group-item list-group-item-action">
+                                <i class="fas fa-clipboard-list me-2"></i>
+                                Bài kiểm tra
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-lg-9">
+                <!-- Welcome Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card bg-gradient-primary text-white">
+                            <div class="card-body">
+                                <h2 class="card-title">
+                                    <i class="fas fa-star me-2"></i>
+                                    Chào mừng Expert!
+                                </h2>
+                                <p class="card-text">
+                                    Quản lý khóa học, bài học và nội dung học tập của bạn một cách hiệu quả.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body text-center">
+                                <div class="stat-number text-primary" th:text="${totalCourses}">0</div>
+                                <div class="stat-label">Khóa học</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body text-center">
+                                <div class="stat-number text-success" th:text="${totalLessons}">0</div>
+                                <div class="stat-label">Bài học</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body text-center">
+                                <div class="stat-number text-warning" th:text="${totalFlashcards}">0</div>
+                                <div class="stat-label">Flashcards</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body text-center">
+                                <div class="stat-number text-info" th:text="${totalQuestions}">0</div>
+                                <div class="stat-label">Câu hỏi</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-clock me-2"></i>
+                                    Hoạt động gần đây
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Tạo khóa học mới</h6>
+                                            <small class="text-muted">Tiếng Nhật N5 - Cơ bản</small>
+                                        </div>
+                                        <small class="text-muted">2 giờ trước</small>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Thêm bài học</h6>
+                                            <small class="text-muted">Bài 1: Hiragana cơ bản</small>
+                                        </div>
+                                        <small class="text-muted">5 giờ trước</small>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Tạo flashcard</h6>
+                                            <small class="text-muted">Bộ từ vựng N5</small>
+                                        </div>
+                                        <small class="text-muted">1 ngày trước</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-chart-line me-2"></i>
+                                    Thống kê nhanh
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Khóa học hoàn thành</span>
+                                        <span class="fw-bold">85%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Bài học đã tạo</span>
+                                        <span class="fw-bold">120</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Flashcards</span>
+                                        <span class="fw-bold">500+</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-bolt me-2"></i>
+                                    Thao tác nhanh
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-6 mb-3">
+                                        <a href="/expert/courses/course-create" class="btn btn-primary w-100">
+                                            <i class="fas fa-plus me-2"></i>
+                                            Tạo khóa học mới
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 mb-3">
+                                        <a href="/expert/lessons/lesson-create" class="btn btn-success w-100">
+                                            <i class="fas fa-play-circle me-2"></i>
+                                            Thêm bài học
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 mb-3">
+                                        <a href="/expert/flashcards/flashcard-create" class="btn btn-warning w-100">
+                                            <i class="fas fa-cards-blank me-2"></i>
+                                            Tạo flashcard
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 mb-3">
+                                        <a href="/expert/questions/question-create" class="btn btn-info w-100">
+                                            <i class="fas fa-question-circle me-2"></i>
+                                            Thêm câu hỏi
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/api.js"></script>
+</body>
+</html>

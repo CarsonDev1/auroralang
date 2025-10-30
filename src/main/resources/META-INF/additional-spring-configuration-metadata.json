@@ -1,0 +1,9 @@
+{
+	"properties": [
+		{
+			"name": "vnpay.version",
+			"type": "java.lang.String",
+			"description": "A description for 'vnpay.version'"
+		}
+	]
+}

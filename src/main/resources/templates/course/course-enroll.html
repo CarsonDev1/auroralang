@@ -287,13 +287,21 @@
 
         const price = c.price || 0;
         if (price > 0) {
-          document.getElementById('coursePrice').textContent = '$' + price.toFixed(2);
+          document.getElementById('coursePrice').textContent = formatVnd(price);
           // If course has price, redirect to payment instead
           document.getElementById('enrollBtn').onclick = () => {
             window.location.href = `/courses/${courseId}/payment`;
           };
         } else {
           document.getElementById('coursePrice').textContent = 'Free';
+        }
+        function formatVnd(amount) {
+          try {
+            const n = Number(amount || 0);
+            return n.toLocaleString('vi-VN') + ' ₫';
+          } catch (e) {
+            return amount + ' ₫';
+          }
         }
       } catch (error) {
         console.error('Error loading course:', error);

@@ -146,78 +146,13 @@
           <div class="card-body p-4">
             <form id="paymentForm">
               <div class="mb-4">
-                <label class="form-label fw-bold mb-3">Select Payment Method</label>
-                <div class="payment-method-card selected" data-method="credit_card">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard"
-                      value="credit_card" checked>
-                    <label class="form-check-label w-100" for="creditCard">
-                      <div class="d-flex justify-content-between align-items-center">
-                        <span><i class="fas fa-credit-card me-2"></i>Credit/Debit Card</span>
-                        <span class="text-muted small">Visa, Mastercard, Amex</span>
-                      </div>
-                    </label>
+                <label class="form-label fw-bold mb-3">Payment Method</label>
+                <div class="payment-method-card selected" data-method="vnpay">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span><img src="https://sandbox.vnpayment.vn/paymentv2/images/logo-vnpay.png" alt="VNPAY"
+                        height="20" class="me-2" />VNPay</span>
+                    <span class="text-muted small">Thanh toán trực tuyến an toàn</span>
                   </div>
-                </div>
-                <div class="payment-method-card" data-method="paypal">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" value="paypal">
-                    <label class="form-check-label w-100" for="paypal">
-                      <div class="d-flex justify-content-between align-items-center">
-                        <span><i class="fab fa-paypal me-2"></i>PayPal</span>
-                        <span class="text-muted small">Pay with PayPal account</span>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-                <div class="payment-method-card" data-method="bank_transfer">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="paymentMethod" id="bankTransfer"
-                      value="bank_transfer">
-                    <label class="form-check-label w-100" for="bankTransfer">
-                      <div class="d-flex justify-content-between align-items-center">
-                        <span><i class="fas fa-university me-2"></i>Bank Transfer</span>
-                        <span class="text-muted small">Direct bank transfer</span>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <div id="creditCardFields">
-                <h6 class="mb-3">Card Details</h6>
-                <div class="row g-3">
-                  <div class="col-12">
-                    <label class="form-label">Card Number</label>
-                    <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456"
-                      maxlength="19" required>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Expiry Date</label>
-                    <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" maxlength="5" required>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">CVV</label>
-                    <input type="text" class="form-control" id="cvv" placeholder="123" maxlength="4" required>
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label">Cardholder Name</label>
-                    <input type="text" class="form-control" id="cardholderName" placeholder="John Doe" required>
-                  </div>
-                </div>
-              </div>
-              <div id="paypalFields" style="display: none;">
-                <div class="alert alert-info">
-                  <i class="fas fa-info-circle me-2"></i> You will be redirected to PayPal to complete your payment.
-                </div>
-              </div>
-              <div id="bankTransferFields" style="display: none;">
-                <div class="alert alert-info">
-                  <i class="fas fa-info-circle me-2"></i> You will receive bank transfer details after submitting your
-                  order.
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Account Holder Name</label>
-                  <input type="text" class="form-control" id="accountHolder" placeholder="Your Full Name">
                 </div>
               </div>
               <div class="form-check mt-4 mb-3">
@@ -260,7 +195,7 @@
             <hr>
             <div class="summary-item">
               <span>Original Price:</span>
-              <span id="originalPrice">$0.00</span>
+              <span id="originalPrice">0 ₫</span>
             </div>
             <div class="summary-item" id="discountRow" style="display: none;">
               <span class="text-success">Discount:</span>
@@ -269,7 +204,7 @@
             <hr>
             <div class="summary-item">
               <span class="h5">Total:</span>
-              <span id="totalPrice" class="h4 text-primary">$0.00</span>
+              <span id="totalPrice" class="h4 text-primary">0 ₫</span>
             </div>
             <div class="mt-3 text-center">
               <small class="text-muted">
@@ -328,33 +263,7 @@
   <script th:inline="javascript">
     const courseId = /*[[${courseId}]]*/ 0;
 
-    // Payment method selection
-    document.querySelectorAll('.payment-method-card').forEach(card => {
-      card.addEventListener('click', function () {
-        document.querySelectorAll('.payment-method-card').forEach(c => c.classList.remove('selected'));
-        this.classList.add('selected');
-        const method = this.dataset.method;
-        document.getElementById(method).checked = true;
-        updatePaymentFields();
-      });
-
-      const radio = card.querySelector('input[type="radio"]');
-      radio.addEventListener('change', updatePaymentFields);
-    });
-
-    function updatePaymentFields() {
-      const method = document.querySelector('input[name="paymentMethod"]:checked').value;
-
-      document.getElementById('creditCardFields').style.display = method === 'credit_card' ? 'block' : 'none';
-      document.getElementById('paypalFields').style.display = method === 'paypal' ? 'block' : 'none';
-      document.getElementById('bankTransferFields').style.display = method === 'bank_transfer' ? 'block' : 'none';
-
-      // Update required fields
-      document.getElementById('cardNumber').required = method === 'credit_card';
-      document.getElementById('expiryDate').required = method === 'credit_card';
-      document.getElementById('cvv').required = method === 'credit_card';
-      document.getElementById('cardholderName').required = method === 'credit_card';
-    }
+    // Only VNPay method is used; hide other dynamic fields
 
     async function loadCourse() {
       try {
@@ -376,12 +285,20 @@
         const discount = originalPrice - discountPrice;
         const total = discountPrice > 0 ? discountPrice : originalPrice;
 
-        document.getElementById('originalPrice').textContent = '$' + originalPrice.toFixed(2);
+        document.getElementById('originalPrice').textContent = formatVnd(originalPrice);
         if (discount > 0) {
           document.getElementById('discountRow').style.display = 'flex';
-          document.getElementById('discount').textContent = '-$' + discount.toFixed(2);
+          document.getElementById('discount').textContent = '-' + formatVnd(discount);
         }
-        document.getElementById('totalPrice').textContent = '$' + total.toFixed(2);
+        document.getElementById('totalPrice').textContent = formatVnd(total);
+        function formatVnd(amount) {
+          try {
+            const n = Number(amount || 0);
+            return n.toLocaleString('vi-VN') + ' ₫';
+          } catch (e) {
+            return amount + ' ₫';
+          }
+        }
       } catch (error) {
         console.error('Error loading course:', error);
       }
@@ -399,25 +316,46 @@
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
 
-      // Simulate payment processing
-      setTimeout(() => {
-        // In real app, this would call payment API
-        alert('Payment successful! You are now enrolled in the course.');
-        // After payment, enroll user
-        fetch(`/api/enrollments/courses/${courseId}`, {
+      try {
+        // totalPrice text is currently formatted with $; derive numeric from DOM or reload course
+        const resCourse = await fetch(`/api/courses/public/${courseId}`);
+        const jsonCourse = await resCourse.json();
+        if (!jsonCourse.success) {
+          alert('Course not found');
+          window.location.href = '/courses';
+          return;
+        }
+        const course = jsonCourse.data;
+        const amount = (course.discountPrice && course.discountPrice > 0) ? course.discountPrice : (course.price || 0);
+
+        const resp = await fetch('/api/payments/create', {
           method: 'POST',
-          credentials: 'include'
-        }).then(() => {
-          window.location.href = '/student/courses';
-        }).catch(() => {
-          window.location.href = '/student/courses';
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            amount: amount,
+            orderInfo: `Payment for course #${courseId}`,
+            courseId: courseId
+          })
         });
-      }, 2000);
+        const data = await resp.json();
+        if (!data.success) {
+          alert(data.message || 'Cannot create VNPay payment');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-lock me-2"></i>Complete Payment';
+          return;
+        }
+        window.location.href = data.data.paymentUrl;
+      } catch (err) {
+        console.error(err);
+        alert('Error creating payment');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-lock me-2"></i>Complete Payment';
+      }
     });
 
     document.addEventListener('DOMContentLoaded', () => {
       loadCourse();
-      updatePaymentFields();
     });
   </script>
 </body>

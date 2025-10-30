@@ -49,10 +49,17 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN") // <--- CHẶN VIEW ADMIN
                         .requestMatchers("/", "/home", "/about", "/contact").permitAll()
+                        // ✅ Guest course pages
+                        .requestMatchers("/courses/**").permitAll()
 
                         // ✅ Permit API Public
                         .requestMatchers("/ping", "/api/ping").permitAll()
                         .requestMatchers("/api/auth/**", "/api/public/**").permitAll()
+                        // ✅ Public course APIs
+                        .requestMatchers("/api/courses/public/**").permitAll()
+                        // ✅ VNPay create + return (public)
+                        .requestMatchers("/api/payments/create").permitAll()
+                        .requestMatchers("/api/payments/vnpay-return").permitAll()
                         .requestMatchers("/api/debug/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/select/**").hasAnyRole("MANAGER", "ADMIN", "EXPERT", "TEACHER")

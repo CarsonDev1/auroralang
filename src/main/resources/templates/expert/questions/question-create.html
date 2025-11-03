@@ -1,1 +1,276 @@
-<!-- Expert Question Create Page -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Question - Expert | AuroraLang</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .sidebar {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .sidebar .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      padding: 0.75rem 1rem;
+      margin: 0.25rem 0;
+      border-radius: 0.5rem;
+      transition: all 0.3s;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-content {
+      background-color: #f8f9fa;
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .option-item {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky pt-3">
+          <div class="text-center mb-4">
+            <h4 class="text-white">AuroraLang</h4>
+            <p class="text-white-50 mb-0">Expert Portal</p>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="/expert/questions">
+                <i class="fas fa-question-circle me-2"></i> Questions </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/auth/logout">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content py-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+          <h1 class="h2">
+            <i class="fas fa-plus-circle me-2 text-primary"></i>New Question
+          </h1>
+          <a href="/expert/questions" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Questions </a>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <form id="questionForm">
+              <div class="mb-3">
+                <label for="questionText" class="form-label">Question Text *</label>
+                <textarea class="form-control" id="questionText" name="questionText" rows="3" required></textarea>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="questionType" class="form-label">Question Type *</label>
+                  <select class="form-select" id="questionType" name="questionType" required onchange="toggleOptions()">
+                    <option value="">Select Type</option>
+                    <option value="MULTIPLE_CHOICE">Multiple Choice</option>
+                    <option value="TRUE_FALSE">True/False</option>
+                    <option value="SHORT_ANSWER">Short Answer</option>
+                    <option value="ESSAY">Essay</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="points" class="form-label">Points *</label>
+                  <input type="number" class="form-control" id="points" name="points" required min="1" value="1">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="courseId" class="form-label">Course</label>
+                <select class="form-select" id="courseId" name="courseId">
+                  <option value="">No Course (General)</option>
+                </select>
+              </div>
+              <!-- Options for Multiple Choice -->
+              <div id="optionsSection" style="display:none;">
+                <label class="form-label">Answer Options *</label>
+                <div id="optionsContainer"></div>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addOption()">
+                  <i class="fas fa-plus me-1"></i>Add Option </button>
+              </div>
+              <!-- Correct Answer -->
+              <div class="mb-3" id="correctAnswerSection" style="display:none;">
+                <label for="correctAnswer" class="form-label">Correct Answer *</label>
+                <input type="text" class="form-control" id="correctAnswer" name="correctAnswer">
+              </div>
+              <div class="mb-3">
+                <label for="explanation" class="form-label">Explanation</label>
+                <textarea class="form-control" id="explanation" name="explanation" rows="3"></textarea>
+              </div>
+              <div id="alertContainer"></div>
+              <div class="d-flex justify-content-end gap-2">
+                <a href="/expert/questions" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save me-1"></i>Create Question </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let optionCount = 0;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      loadCourses();
+      document.getElementById('questionForm').addEventListener('submit', handleSubmit);
+    });
+
+    async function loadCourses() {
+      try {
+        const res = await fetch('/api/expert/courses?size=100', { credentials: 'include' });
+        const json = await res.json();
+        const select = document.getElementById('courseId');
+        if (json.success && json.data.content) {
+          json.data.content.forEach(c => {
+            const option = document.createElement('option');
+            option.value = c.courseId;
+            option.textContent = c.courseName;
+            select.appendChild(option);
+          });
+        }
+      } catch (error) {
+        console.error('Error loading courses:', error);
+      }
+    }
+
+    function toggleOptions() {
+      const type = document.getElementById('questionType').value;
+      const optionsSection = document.getElementById('optionsSection');
+      const correctAnswerSection = document.getElementById('correctAnswerSection');
+
+      if (type === 'MULTIPLE_CHOICE') {
+        optionsSection.style.display = 'block';
+        correctAnswerSection.style.display = 'none';
+        if (optionCount === 0) {
+          addOption();
+          addOption();
+        }
+      } else if (type === 'TRUE_FALSE') {
+        optionsSection.style.display = 'none';
+        correctAnswerSection.style.display = 'block';
+        document.getElementById('correctAnswer').type = 'text';
+      } else {
+        optionsSection.style.display = 'none';
+        correctAnswerSection.style.display = 'block';
+        document.getElementById('correctAnswer').type = 'text';
+      }
+    }
+
+    function addOption() {
+      optionCount++;
+      const container = document.getElementById('optionsContainer');
+      const div = document.createElement('div');
+      div.className = 'option-item';
+      div.id = `option-${optionCount}`;
+      div.innerHTML = `
+        <div class="d-flex align-items-center">
+          <input type="radio" name="correctOption" value="${optionCount}" class="me-2" required>
+          <input type="text" class="form-control" id="optionText-${optionCount}" placeholder="Option text" required>
+          <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="removeOption(${optionCount})">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      `;
+      container.appendChild(div);
+    }
+
+    function removeOption(id) {
+      document.getElementById(`option-${id}`).remove();
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const alertContainer = document.getElementById('alertContainer');
+      const type = document.getElementById('questionType').value;
+
+      let data = {
+        questionText: document.getElementById('questionText').value,
+        questionType: type,
+        points: parseInt(document.getElementById('points').value),
+        explanation: document.getElementById('explanation').value
+      };
+
+      if (document.getElementById('courseId').value) {
+        data.courseId = parseInt(document.getElementById('courseId').value);
+      }
+
+      if (type === 'MULTIPLE_CHOICE') {
+        const options = [];
+        const correctIndex = document.querySelector('input[name="correctOption"]:checked')?.value;
+
+        for (let i = 1; i <= optionCount; i++) {
+          const optionEl = document.getElementById(`option-${i}`);
+          if (optionEl) {
+            const text = document.getElementById(`optionText-${i}`).value;
+            if (text) {
+              options.push({
+                text: text,
+                isCorrect: i.toString() === correctIndex
+              });
+            }
+          }
+        }
+        data.options = options;
+      } else {
+        data.correctAnswer = document.getElementById('correctAnswer').value;
+      }
+
+      try {
+        const res = await fetch('/api/expert/questions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          alertContainer.innerHTML = '<div class="alert alert-success">Question created successfully!</div>';
+          setTimeout(() => {
+            window.location.href = '/expert/questions';
+          }, 1500);
+        } else {
+          alertContainer.innerHTML = `<div class="alert alert-danger">${json.message || 'Failed to create question'}</div>`;
+        }
+      } catch (error) {
+        console.error('Error creating question:', error);
+        alertContainer.innerHTML = '<div class="alert alert-danger">Error creating question</div>';
+      }
+    }
+  </script>
+</body>
+
+</html>

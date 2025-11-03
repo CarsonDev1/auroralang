@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.RequiredArgsConstructor;
 
@@ -50,6 +51,29 @@ public class ManagerPageController {
     public String studentManage(@PathVariable Integer studentId, Model model) {
         model.addAttribute("studentId", studentId);
         return "manager/students/student-manage";
+    }
+
+    // Sessions (Iteration 3)
+    @GetMapping({"/sessions", "/sessions/", "/sessions/session-list"})
+    public String sessionList(@RequestParam(required = false) Integer classId, Model model) {
+        if (classId != null) {
+            model.addAttribute("classId", classId);
+        }
+        return "manager/sessions/session-list";
+    }
+
+    @GetMapping("/sessions/new")
+    public String sessionCreate(@RequestParam(required = false) Integer classId, Model model) {
+        if (classId != null) {
+            model.addAttribute("classId", classId);
+        }
+        return "manager/sessions/session-create";
+    }
+
+    @GetMapping("/sessions/{sessionId}")
+    public String sessionDetail(@PathVariable Integer sessionId, Model model) {
+        model.addAttribute("sessionId", sessionId);
+        return "manager/sessions/session-detail";
     }
 }
 

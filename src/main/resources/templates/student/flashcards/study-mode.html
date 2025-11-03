@@ -5,52 +5,189 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Study Mode | Student</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
   <style>
+    .sidebar {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .sidebar .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      padding: 0.75rem 1rem;
+      margin: 0.25rem 0;
+      border-radius: 0.5rem;
+      transition: all 0.3s;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-content {
+      background-color: #f8f9fa;
+    }
+
     .study-card {
-      min-height: 300px;
+      min-height: 400px;
       cursor: pointer;
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .study-card.flipped {
+      transform: rotateY(180deg);
     }
 
     .study-content {
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 250px;
+      min-height: 350px;
+      padding: 2rem;
+    }
+
+    .card-front,
+    .card-back {
+      backface-visibility: hidden;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      border-radius: 20px;
+    }
+
+    .card-front {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .card-back {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      transform: rotateY(180deg);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
     }
   </style>
 </head>
 
 <body>
-  <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3>Study Mode</h3>
-      <a href="/student/flashcards" class="btn btn-outline-secondary">Back to Library</a>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-12 col-lg-8">
-        <div class="card study-card" id="studyCard" onclick="flip()">
-          <div class="card-body study-content">
-            <div class="text-center">
-              <h2 id="cardText">Click "Start Study" to begin</h2>
-              <div id="cardPronunciation" class="text-muted mt-2"></div>
-              <div id="cardImage" class="mt-3"></div>
-            </div>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky pt-3">
+          <div class="text-center mb-4">
+            <h4 class="text-white">AuroraLang</h4>
+            <p class="text-white-50 mb-0">Student Portal</p>
           </div>
-          <div class="card-footer d-flex justify-content-between align-items-center">
-            <div>
-              <span id="progress">0 / 0</span>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="/student/dashboard">
+                <i class="fas fa-tachometer-alt me-2"></i> Dashboard </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/student/courses">
+                <i class="fas fa-book me-2"></i> My Courses </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/student/classes">
+                <i class="fas fa-chalkboard-teacher me-2"></i> My Classes </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/student/flashcards">
+                <i class="fas fa-layer-group me-2"></i> Flashcards </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/student/lessons">
+                <i class="fas fa-play-circle me-2"></i> Lessons </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/student/tests">
+                <i class="fas fa-clipboard-check me-2"></i> Tests </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/student/schedule">
+                <i class="fas fa-calendar-alt me-2"></i> Schedule </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/auth/logout">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <a href="/student/flashcards" class="btn btn-link text-decoration-none mb-2">
+              <i class="fas fa-arrow-left me-2"></i>Back to Library </a>
+            <h3 class="mb-0">
+              <i class="fas fa-book-reader me-2 text-primary"></i>Study Mode
+            </h3>
+          </div>
+        </div>
+        <div class="row justify-content-center">
+          <div class="col-12 col-lg-8">
+            <div class="card study-card" id="studyCard" onclick="flip()">
+              <div class="position-relative" style="min-height: 400px;">
+                <div class="card-front" id="cardFront">
+                  <div class="text-center w-100">
+                    <h2 id="cardText" class="mb-3">Click "Start Study" to begin</h2>
+                    <div id="cardPronunciation" class="text-white-50 small mb-3"></div>
+                    <div id="cardImage"></div>
+                  </div>
+                </div>
+                <div class="card-back" id="cardBack">
+                  <div class="text-center w-100">
+                    <h2 id="cardTextBack" class="mb-3"></h2>
+                    <div id="cardImageBack"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                <div>
+                  <span class="badge bg-primary" id="progress">0 / 0</span>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-success" id="startBtn" onclick="startStudy()">
+                    <i class="fas fa-play me-1"></i>Start Study </button>
+                  <button class="btn btn-primary d-none" id="nextBtn" onclick="nextCard()">
+                    <i class="fas fa-forward me-1"></i>Next </button>
+                  <button class="btn btn-warning d-none" id="againBtn" onclick="againCard()">
+                    <i class="fas fa-redo me-1"></i>Again </button>
+                </div>
+              </div>
             </div>
-            <div>
-              <button class="btn btn-success" id="startBtn" onclick="startStudy()">Start Study</button>
-              <button class="btn btn-primary d-none" id="nextBtn" onclick="nextCard()">Next</button>
-              <button class="btn btn-warning d-none" id="againBtn" onclick="againCard()">Again</button>
+            <div class="text-center mt-3">
+              <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>Click the card to flip and see the answer </small>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     let flashcards = [];
     let currentIndex = 0;
@@ -67,7 +204,7 @@
 
     function startStudy() {
       if (flashcards.length === 0) {
-        alert('No flashcards available');
+        alert('No flashcards available. Please enroll in a course first.');
         return;
       }
       studyStarted = true;
@@ -78,14 +215,19 @@
 
     function showCard() {
       if (currentIndex >= flashcards.length) {
-        document.getElementById('cardText').textContent = 'Study completed!';
-        document.getElementById('cardPronunciation').textContent = '';
+        document.getElementById('cardText').textContent = '🎉 Study completed!';
+        document.getElementById('cardPronunciation').textContent = 'Great job!';
         document.getElementById('cardImage').innerHTML = '';
+        document.getElementById('cardTextBack').textContent = '';
+        document.getElementById('cardImageBack').innerHTML = '';
         document.getElementById('nextBtn').classList.add('d-none');
         document.getElementById('againBtn').classList.add('d-none');
         document.getElementById('startBtn').classList.remove('d-none');
-        document.getElementById('startBtn').textContent = 'Study Again';
+        document.getElementById('startBtn').innerHTML = '<i class="fas fa-redo me-1"></i>Study Again';
         studyStarted = false;
+        const card = document.getElementById('studyCard');
+        card.classList.remove('flipped');
+        isFlipped = false;
         return;
       }
 
@@ -94,14 +236,24 @@
       document.getElementById('cardPronunciation').textContent = card.pronunciation || '';
       const img = document.getElementById('cardImage');
       if (card.frontImageUrl) {
-        img.innerHTML = `<img src="${card.frontImageUrl}" class="img-fluid" style="max-height:100px" alt="Front">`;
+        img.innerHTML = `<img src="${card.frontImageUrl}" class="img-fluid rounded" style="max-height:150px" alt="Front">`;
       } else {
         img.innerHTML = '';
+      }
+
+      document.getElementById('cardTextBack').textContent = card.backText || '';
+      const imgBack = document.getElementById('cardImageBack');
+      if (card.backImageUrl) {
+        imgBack.innerHTML = `<img src="${card.backImageUrl}" class="img-fluid rounded" style="max-height:150px" alt="Back">`;
+      } else {
+        imgBack.innerHTML = '';
       }
 
       document.getElementById('progress').textContent = `${currentIndex + 1} / ${flashcards.length}`;
       document.getElementById('nextBtn').classList.add('d-none');
       document.getElementById('againBtn').classList.add('d-none');
+      const studyCard = document.getElementById('studyCard');
+      studyCard.classList.remove('flipped');
       isFlipped = false;
     }
 
@@ -109,18 +261,17 @@
       if (!studyStarted || currentIndex >= flashcards.length) return;
 
       const card = flashcards[currentIndex];
+      const studyCard = document.getElementById('studyCard');
       if (!isFlipped) {
-        document.getElementById('cardText').textContent = card.backText || '';
-        document.getElementById('cardPronunciation').textContent = '';
-        const img = document.getElementById('cardImage');
-        if (card.backImageUrl) {
-          img.innerHTML = `<img src="${card.backImageUrl}" class="img-fluid" style="max-height:100px" alt="Back">`;
-        } else {
-          img.innerHTML = '';
-        }
+        studyCard.classList.add('flipped');
+        isFlipped = true;
         document.getElementById('nextBtn').classList.remove('d-none');
         document.getElementById('againBtn').classList.remove('d-none');
-        isFlipped = true;
+      } else {
+        studyCard.classList.remove('flipped');
+        isFlipped = false;
+        document.getElementById('nextBtn').classList.add('d-none');
+        document.getElementById('againBtn').classList.add('d-none');
       }
     }
 
@@ -130,7 +281,6 @@
     }
 
     function againCard() {
-      // Add current card to end for review
       flashcards.push(flashcards[currentIndex]);
       currentIndex++;
       showCard();

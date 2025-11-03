@@ -52,4 +52,16 @@ public class GuestPageController {
         model.addAttribute("courseId", courseId);
         return "course/course-payment";
     }
+
+    // Public Classes (Iteration 3)
+    @GetMapping({"/classes", "/classes/", "/classes/class-list"})
+    public String publicClassList() {
+        return "class/class-list";
+    }
+
+    @GetMapping("/classes/{classId}")
+    public String publicClassDetail(@PathVariable Integer classId, Model model) {
+        model.addAttribute("classId", classId);
+        return "class/class-detail";
+    }
 }

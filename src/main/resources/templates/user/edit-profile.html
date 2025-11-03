@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile - AuroraLang</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container py-5">
+    <div class="text-center mb-4">
+      <h2>
+        <i class="fas fa-user-edit me-2 text-primary"></i>Edit Profile
+      </h2>
+      <p class="text-muted">Update your personal information</p>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <form id="profileForm">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="fullName" class="form-label">Full Name *</label>
+              <input type="text" class="form-control" id="fullName" name="fullName" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="phone" class="form-label">Phone</label>
+              <input type="tel" class="form-control" id="phone" name="phone">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email *</label>
+            <input type="email" class="form-control" id="email" name="email" required readonly>
+            <small class="text-muted">Email cannot be changed</small>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="dateOfBirth" class="form-label">Date of Birth</label>
+              <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="gender" class="form-label">Gender</label>
+              <select class="form-select" id="gender" name="gender">
+                <option value="">Select Gender</option>
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="address" class="form-label">Address</label>
+            <textarea class="form-control" id="address" name="address" rows="2"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="bio" class="form-label">Bio</label>
+            <textarea class="form-control" id="bio" name="bio" rows="4"
+              placeholder="Tell us about yourself..."></textarea>
+          </div>
+          <div id="alertContainer"></div>
+          <div class="d-flex justify-content-end gap-2">
+            <a href="/user/profile" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save me-1"></i>Save Changes </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      loadProfile();
+      document.getElementById('profileForm').addEventListener('submit', handleSubmit);
+    });
+
+    async function loadProfile() {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        const json = await res.json();
+
+        if (json.success && json.data) {
+          const user = json.data;
+          document.getElementById('fullName').value = user.fullName || '';
+          document.getElementById('email').value = user.email || '';
+          document.getElementById('phone').value = user.phone || '';
+          document.getElementById('dateOfBirth').value = user.dateOfBirth || '';
+          document.getElementById('gender').value = user.gender || '';
+          document.getElementById('address').value = user.address || '';
+          document.getElementById('bio').value = user.bio || '';
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const alertContainer = document.getElementById('alertContainer');
+
+      const data = {
+        fullName: document.getElementById('fullName').value,
+        phone: document.getElementById('phone').value,
+        dateOfBirth: document.getElementById('dateOfBirth').value,
+        gender: document.getElementById('gender').value,
+        address: document.getElementById('address').value,
+        bio: document.getElementById('bio').value
+      };
+
+      try {
+        const res = await fetch('/api/auth/profile', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(data)
+        });
+
+        const json = await res.json();
+
+        if (json.success) {
+          alertContainer.innerHTML = '<div class="alert alert-success">Profile updated successfully!</div>';
+          setTimeout(() => {
+            window.location.href = '/user/profile';
+          }, 1500);
+        } else {
+          alertContainer.innerHTML = `<div class="alert alert-danger">${json.message || 'Failed to update profile'}</div>`;
+        }
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        alertContainer.innerHTML = '<div class="alert alert-danger">Error updating profile</div>';
+      }
+    }
+  </script>
+</body>
+
+</html>

@@ -56,9 +56,33 @@ public class StudentPageController {
         return "student/tests/test-taking";
     }
 
-    // Schedule
+    @GetMapping("/tests/{testId}/result")
+    public String testResult(@PathVariable Integer testId, Model model) {
+        model.addAttribute("testId", testId);
+        return "student/tests/test-result";
+    }
+
+    @GetMapping("/tests/{testId}/review")
+    public String testReview(@PathVariable Integer testId, Model model) {
+        model.addAttribute("testId", testId);
+        return "student/tests/test-review";
+    }
+
+    // Schedule (Iteration 3)
     @GetMapping("/schedule")
     public String schedule() { return "student/schedule/schedule"; }
+
+    @GetMapping("/classes/{classId}/schedule")
+    public String classSchedule(@PathVariable Integer classId, Model model) {
+        model.addAttribute("classId", classId);
+        return "student/schedule/class-schedule";
+    }
+
+    @GetMapping("/sessions/{sessionId}")
+    public String sessionDetail(@PathVariable Integer sessionId, Model model) {
+        model.addAttribute("sessionId", sessionId);
+        return "student/sessions/session-detail";
+    }
 
     // Flashcards library and activities
     @GetMapping("/flashcards")

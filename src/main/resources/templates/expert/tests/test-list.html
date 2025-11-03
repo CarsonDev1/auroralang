@@ -1,1 +1,279 @@
-<!-- Expert Test List Page -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test List - Expert | AuroraLang</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .sidebar {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .sidebar .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      padding: 0.75rem 1rem;
+      margin: 0.25rem 0;
+      border-radius: 0.5rem;
+      transition: all 0.3s;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-content {
+      background-color: #f8f9fa;
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky pt-3">
+          <div class="text-center mb-4">
+            <h4 class="text-white">AuroraLang</h4>
+            <p class="text-white-50 mb-0">Expert Portal</p>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="/expert/dashboard">
+                <i class="fas fa-tachometer-alt me-2"></i> Dashboard </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/expert/courses">
+                <i class="fas fa-book me-2"></i> Courses </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/expert/lessons">
+                <i class="fas fa-play-circle me-2"></i> Lessons </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/expert/tests">
+                <i class="fas fa-clipboard-check me-2"></i> Tests </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/expert/questions">
+                <i class="fas fa-question-circle me-2"></i> Questions </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/expert/flashcards">
+                <i class="fas fa-layer-group me-2"></i> Flashcards </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/auth/logout">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content py-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+          <h1 class="h2">
+            <i class="fas fa-clipboard-check me-2 text-primary"></i>Test Management
+          </h1>
+          <a href="/expert/tests/new" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>New Test </a>
+        </div>
+        <!-- Filter Section -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Course</label>
+                <select class="form-select" id="courseFilter" onchange="loadTests(0)">
+                  <option value="">All Courses</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Search</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="searchInput" placeholder="Search tests...">
+                  <button class="btn btn-outline-secondary" onclick="loadTests(0)">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tests Grid -->
+        <div class="row" id="testsGrid">
+          <div class="col-12 text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+        <!-- Pagination -->
+        <nav class="mt-4">
+          <ul id="pager" class="pagination justify-content-center"></ul>
+        </nav>
+      </main>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let currentPage = 0;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      loadCourses();
+      loadTests(0);
+      document.getElementById('searchInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+          loadTests(0);
+        }
+      });
+    });
+
+    async function loadCourses() {
+      try {
+        const res = await fetch('/api/expert/courses?size=100', { credentials: 'include' });
+        const json = await res.json();
+        const select = document.getElementById('courseFilter');
+        if (json.success && json.data.content) {
+          json.data.content.forEach(c => {
+            const option = document.createElement('option');
+            option.value = c.courseId;
+            option.textContent = c.courseName;
+            select.appendChild(option);
+          });
+        }
+      } catch (error) {
+        console.error('Error loading courses:', error);
+      }
+    }
+
+    async function loadTests(page = 0) {
+      currentPage = page;
+      const courseFilter = document.getElementById('courseFilter').value;
+      const search = document.getElementById('searchInput').value.trim();
+
+      try {
+        const params = new URLSearchParams();
+        params.set('page', page);
+        params.set('size', 12);
+        if (courseFilter) params.set('courseId', courseFilter);
+        if (search) params.set('q', search);
+
+        const res = await fetch(`/api/expert/tests?${params.toString()}`, { credentials: 'include' });
+        const json = await res.json();
+        const grid = document.getElementById('testsGrid');
+
+        if (!json.success || !json.data || !json.data.content || json.data.content.length === 0) {
+          grid.innerHTML = `
+            <div class="col-12">
+              <div class="card">
+                <div class="card-body text-center py-5">
+                  <i class="fas fa-clipboard-check fa-4x text-muted mb-3" style="opacity: 0.3;"></i>
+                  <h5 class="text-muted">No tests found</h5>
+                  <p class="text-muted">Create a new test to get started</p>
+                  <a href="/expert/tests/new" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>New Test
+                  </a>
+                </div>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = json.data.content.map(t => `
+          <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="card-title mb-0">${escapeHtml(t.testName || 'Untitled')}</h5>
+                  <span class="badge bg-primary">${t.totalQuestions || 0} Q</span>
+                </div>
+                <p class="card-text text-muted small mb-3">
+                  ${escapeHtml((t.description || '').substring(0, 100))}${t.description && t.description.length > 100 ? '...' : ''}
+                </p>
+                <div class="mb-3">
+                  <div class="row text-center">
+                    <div class="col-6">
+                      <small class="text-muted d-block">Duration</small>
+                      <strong>${t.durationMinutes || 0} min</strong>
+                    </div>
+                    <div class="col-6">
+                      <small class="text-muted d-block">Course</small>
+                      <strong class="small">${escapeHtml(t.courseName || 'N/A')}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer bg-white">
+                <div class="d-flex justify-content-between">
+                  <a href="/expert/tests/${t.testId}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-eye me-1"></i>View
+                  </a>
+                  <a href="/expert/tests/${t.testId}/edit" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-edit me-1"></i>Edit
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        renderPager(json.data);
+      } catch (error) {
+        console.error('Error loading tests:', error);
+        document.getElementById('testsGrid').innerHTML = `
+          <div class="col-12">
+            <div class="alert alert-danger">
+              <i class="fas fa-exclamation-triangle me-2"></i>Error loading tests
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function renderPager(pageData) {
+      const ul = document.getElementById('pager');
+      ul.innerHTML = '';
+      if (!pageData || pageData.totalPages <= 1) return;
+
+      for (let i = 0; i < pageData.totalPages; i++) {
+        const li = document.createElement('li');
+        li.className = `page-item ${i === pageData.page ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#" onclick="loadTests(${i}); return false;">${i + 1}</a>`;
+        ul.appendChild(li);
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+
+</html>

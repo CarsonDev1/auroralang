@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Session - Manager | AuroraLang</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .sidebar {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .sidebar .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      padding: 0.75rem 1rem;
+      margin: 0.25rem 0;
+      border-radius: 0.5rem;
+      transition: all 0.3s;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-content {
+      background-color: #f8f9fa;
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky pt-3">
+          <div class="text-center mb-4">
+            <h4 class="text-white">AuroraLang</h4>
+            <p class="text-white-50 mb-0">Manager Portal</p>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="/manager/dashboard">
+                <i class="fas fa-tachometer-alt me-2"></i> Dashboard </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/manager/classes/class-list">
+                <i class="fas fa-chalkboard-teacher me-2"></i> Classes </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/manager/sessions">
+                <i class="fas fa-calendar-check me-2"></i> Sessions </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/manager/students/student-list">
+                <i class="fas fa-user-graduate me-2"></i> Students </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/auth/logout">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content py-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+          <h1 class="h2">
+            <i class="fas fa-calendar-plus me-2 text-primary"></i>New Session
+          </h1>
+          <a href="/manager/sessions" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Sessions </a>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <form id="sessionForm">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="classId" class="form-label">Class *</label>
+                    <select class="form-select" id="classId" name="classId" required>
+                      <option value="">Select Class</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="sessionNumber" class="form-label">Session Number *</label>
+                    <input type="number" class="form-control" id="sessionNumber" name="sessionNumber" required min="1">
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="sessionName" class="form-label">Session Name *</label>
+                <input type="text" class="form-control" id="sessionName" name="sessionName" required>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="sessionDate" class="form-label">Session Date *</label>
+                    <input type="date" class="form-control" id="sessionDate" name="sessionDate" required>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="startTime" class="form-label">Start Time *</label>
+                    <input type="time" class="form-control" id="startTime" name="startTime" required>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="endTime" class="form-label">End Time *</label>
+                    <input type="time" class="form-control" id="endTime" name="endTime" required>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control" id="location" name="location" placeholder="e.g., Room 101">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="onlineMeetingUrl" class="form-label">Online Meeting URL</label>
+                    <input type="url" class="form-control" id="onlineMeetingUrl" name="onlineMeetingUrl"
+                      placeholder="https://...">
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="lessonId" class="form-label">Lesson (Optional)</label>
+                <select class="form-select" id="lessonId" name="lessonId">
+                  <option value="">No Lesson</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                  <option value="SCHEDULED" selected>Scheduled</option>
+                  <option value="ONGOING">Ongoing</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="CANCELLED">Cancelled</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+              </div>
+              <div class="d-flex justify-content-end gap-2">
+                <a href="/manager/sessions" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save me-1"></i>Create Session </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:inline="javascript">
+    const prefilledClassId = /*[[${classId}]]*/ null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      loadClasses();
+      loadLessons();
+      document.getElementById('sessionForm').addEventListener('submit', handleSubmit);
+    });
+
+    async function loadClasses() {
+      try {
+        const res = await fetch('/api/classes/manager/my-classes?size=100', { credentials: 'include' });
+        const json = await res.json();
+        const select = document.getElementById('classId');
+        if (json.success && json.data.content) {
+          json.data.content.forEach(c => {
+            const option = document.createElement('option');
+            option.value = c.classId;
+            option.textContent = `${c.classCode} - ${c.className}`;
+            if (prefilledClassId && c.classId == prefilledClassId) {
+              option.selected = true;
+            }
+            select.appendChild(option);
+          });
+        }
+      } catch (error) {
+        console.error('Error loading classes:', error);
+      }
+    }
+
+    async function loadLessons() {
+      const classId = document.getElementById('classId').value;
+      if (!classId) return;
+
+      try {
+        const res = await fetch(`/api/courses/${classId}/lessons`, { credentials: 'include' });
+        const json = await res.json();
+        const select = document.getElementById('lessonId');
+        select.innerHTML = '<option value="">No Lesson</option>';
+        if (json.success && json.data) {
+          json.data.forEach(l => {
+            const option = document.createElement('option');
+            option.value = l.lessonId;
+            option.textContent = l.lessonName || `Lesson ${l.lessonOrder}`;
+            select.appendChild(option);
+          });
+        }
+      } catch (error) {
+        console.error('Error loading lessons:', error);
+      }
+    }
+
+    document.getElementById('classId').addEventListener('change', loadLessons);
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData);
+
+      // Convert classId and lessonId to integers
+      if (data.classId) data.classId = parseInt(data.classId);
+      if (data.lessonId) data.lessonId = parseInt(data.lessonId);
+      if (data.sessionNumber) data.sessionNumber = parseInt(data.sessionNumber);
+
+      try {
+        const res = await fetch('/api/manager/sessions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        if (json.success) {
+          alert('Session created successfully!');
+          window.location.href = '/manager/sessions';
+        } else {
+          alert(json.message || 'Failed to create session');
+        }
+      } catch (error) {
+        console.error('Error creating session:', error);
+        alert('Error creating session');
+      }
+    }
+  </script>
+</body>
+
+</html>

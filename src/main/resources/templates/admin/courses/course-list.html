@@ -6,7 +6,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin | Courses</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
+    .sidebar {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .sidebar .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      padding: .75rem 1rem;
+      margin: .25rem 0;
+      border-radius: .5rem;
+      transition: all .3s;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      color: #fff;
+      background-color: rgba(255, 255, 255, .1);
+    }
+
+    .main-content {
+      background-color: #f8f9fa;
+    }
+
     .table thead th {
       white-space: nowrap;
     }
@@ -94,40 +118,66 @@
 </head>
 
 <body>
-  <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="mb-0">Courses</h3>
-      <div class="d-flex gap-2">
-        <input id="q" class="form-control" placeholder="Search code/name/description" style="min-width:260px" />
-        <button class="btn btn-outline-secondary" onclick="loadCourses(0)">Search</button>
-        <a class="btn btn-primary" href="/admin/courses/new">New Course</a>
-      </div>
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky pt-3">
+          <div class="text-center mb-4">
+            <h4 class="text-white">AuroraLang</h4>
+            <p class="text-white-50 mb-0">Admin Portal</p>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link" href="/admin/dashboard"><i
+                  class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="/admin/users/user-list"><i
+                  class="fas fa-users me-2"></i>Users</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/admin/courses/course-list"><i
+                  class="fas fa-book me-2"></i>Courses</a></li>
+            <li class="nav-item"><a class="nav-link" href="/admin/settings/system-settings"><i
+                  class="fas fa-cog me-2"></i>Settings</a></li>
+            <li class="nav-item"><a class="nav-link" href="/admin/analytics/overview"><i
+                  class="fas fa-chart-bar me-2"></i>Analytics</a></li>
+            <li class="nav-item"><a class="nav-link" href="/auth/logout"><i
+                  class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+          </ul>
+        </div>
+      </nav>
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 main-content">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="mb-0"><i class="fas fa-book me-2 text-primary"></i>Courses</h3>
+          <div class="d-flex gap-2">
+            <input id="q" class="form-control" placeholder="Search code/name/description" style="min-width:260px" />
+            <button class="btn btn-outline-secondary" onclick="loadCourses(0)">Search</button>
+            <a class="btn btn-primary" href="/admin/courses/new"><i class="fas fa-plus me-1"></i>New Course</a>
+          </div>
+        </div>
+        <div class="d-flex gap-2 mb-2">
+          <button class="btn btn-sm btn-success" onclick="bulkActivate()">Activate</button>
+          <button class="btn btn-sm btn-warning" onclick="bulkDeactivate()">Deactivate</button>
+          <button class="btn btn-sm btn-outline-danger" onclick="bulkDelete()">Delete</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr>
+                <th><input type="checkbox"
+                    onclick="document.querySelectorAll('.row-check').forEach(c=>c.checked=this.checked)"></th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Public</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="coursesBody"></tbody>
+          </table>
+        </div>
+        <nav>
+          <ul id="pager" class="pagination justify-content-center"></ul>
+        </nav>
+      </main>
     </div>
-    <div class="d-flex gap-2 mb-2">
-      <button class="btn btn-sm btn-success" onclick="bulkActivate()">Activate</button>
-      <button class="btn btn-sm btn-warning" onclick="bulkDeactivate()">Deactivate</button>
-      <button class="btn btn-sm btn-outline-danger" onclick="bulkDelete()">Delete</button>
-    </div>
-    <div class="table-responsive">
-      <table class="table table-striped align-middle">
-        <thead>
-          <tr>
-            <th><input type="checkbox"
-                onclick="document.querySelectorAll('.row-check').forEach(c=>c.checked=this.checked)"></th>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Level</th>
-            <th>Status</th>
-            <th>Public</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="coursesBody"></tbody>
-      </table>
-    </div>
-    <nav>
-      <ul id="pager" class="pagination"></ul>
-    </nav>
   </div>
 </body>
 

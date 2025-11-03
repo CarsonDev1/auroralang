@@ -1,1 +1,187 @@
-<!-- Expert Question Edit Page -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Question - Expert | AuroraLang</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .sidebar {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .sidebar .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      padding: 0.75rem 1rem;
+      margin: 0.25rem 0;
+      border-radius: 0.5rem;
+      transition: all 0.3s;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-content {
+      background-color: #f8f9fa;
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky pt-3">
+          <div class="text-center mb-4">
+            <h4 class="text-white">AuroraLang</h4>
+            <p class="text-white-50 mb-0">Expert Portal</p>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="/expert/questions">
+                <i class="fas fa-question-circle me-2"></i> Questions </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/auth/logout">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content py-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+          <h1 class="h2">
+            <i class="fas fa-edit me-2 text-primary"></i>Edit Question
+          </h1>
+          <a href="/expert/questions" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Questions </a>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <form id="questionForm">
+              <div class="mb-3">
+                <label for="questionText" class="form-label">Question Text *</label>
+                <textarea class="form-control" id="questionText" name="questionText" rows="3" required></textarea>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="questionType" class="form-label">Question Type *</label>
+                  <select class="form-select" id="questionType" name="questionType" required>
+                    <option value="MULTIPLE_CHOICE">Multiple Choice</option>
+                    <option value="TRUE_FALSE">True/False</option>
+                    <option value="SHORT_ANSWER">Short Answer</option>
+                    <option value="ESSAY">Essay</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="points" class="form-label">Points *</label>
+                  <input type="number" class="form-control" id="points" name="points" required min="1">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="correctAnswer" class="form-label">Correct Answer *</label>
+                <input type="text" class="form-control" id="correctAnswer" name="correctAnswer" required>
+              </div>
+              <div class="mb-3">
+                <label for="explanation" class="form-label">Explanation</label>
+                <textarea class="form-control" id="explanation" name="explanation" rows="3"></textarea>
+              </div>
+              <div id="alertContainer"></div>
+              <div class="d-flex justify-content-end gap-2">
+                <a href="/expert/questions" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save me-1"></i>Update Question </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:inline="javascript">
+    const questionId = /*[[${questionId}]]*/ 0;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      loadQuestion();
+      document.getElementById('questionForm').addEventListener('submit', handleSubmit);
+    });
+
+    async function loadQuestion() {
+      try {
+        const res = await fetch(`/api/expert/questions/${questionId}`, { credentials: 'include' });
+        const json = await res.json();
+
+        if (!json.success || !json.data) {
+          alert('Question not found');
+          window.location.href = '/expert/questions';
+          return;
+        }
+
+        const q = json.data;
+        document.getElementById('questionText').value = q.questionText || '';
+        document.getElementById('questionType').value = q.questionType || 'MULTIPLE_CHOICE';
+        document.getElementById('points').value = q.points || 1;
+        document.getElementById('correctAnswer').value = q.correctAnswer || '';
+        document.getElementById('explanation').value = q.explanation || '';
+      } catch (error) {
+        console.error('Error loading question:', error);
+      }
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const alertContainer = document.getElementById('alertContainer');
+      const data = {
+        questionText: document.getElementById('questionText').value,
+        questionType: document.getElementById('questionType').value,
+        points: parseInt(document.getElementById('points').value),
+        correctAnswer: document.getElementById('correctAnswer').value,
+        explanation: document.getElementById('explanation').value
+      };
+
+      try {
+        const res = await fetch(`/api/expert/questions/${questionId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          alertContainer.innerHTML = '<div class="alert alert-success">Question updated successfully!</div>';
+          setTimeout(() => {
+            window.location.href = '/expert/questions';
+          }, 1500);
+        } else {
+          alertContainer.innerHTML = `<div class="alert alert-danger">${json.message || 'Failed to update question'}</div>`;
+        }
+      } catch (error) {
+        console.error('Error updating question:', error);
+        alertContainer.innerHTML = '<div class="alert alert-danger">Error updating question</div>';
+      }
+    }
+  </script>
+</body>
+
+</html>

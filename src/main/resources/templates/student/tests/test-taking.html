@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taking Test - Student | AuroraLang</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .sidebar {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .sidebar .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      padding: 0.75rem 1rem;
+      margin: 0.25rem 0;
+      border-radius: 0.5rem;
+      transition: all 0.3s;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-content {
+      background-color: #f8f9fa;
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-card {
+      margin-bottom: 1.5rem;
+    }
+
+    .timer-alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1050;
+      border-radius: 15px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+    }
+
+    .option-item {
+      padding: 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .option-item:hover {
+      border-color: #667eea;
+      background-color: #f8f9fa;
+    }
+
+    .option-item.selected {
+      border-color: #667eea;
+      background-color: rgba(102, 126, 234, 0.1);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky pt-3">
+          <div class="text-center mb-4">
+            <h4 class="text-white">AuroraLang</h4>
+            <p class="text-white-50 mb-0">Student Portal</p>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="/student/dashboard">
+                <i class="fas fa-tachometer-alt me-2"></i> Dashboard </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/student/tests">
+                <i class="fas fa-clipboard-check me-2"></i> Tests </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/auth/logout">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content py-4">
+        <!-- Timer Alert -->
+        <div class="alert alert-warning timer-alert" id="timerAlert" style="display:none;">
+          <i class="fas fa-clock me-2"></i>
+          <strong>Time remaining: <span id="timerDisplay">00:00</span></strong>
+        </div>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+          <h1 class="h2">
+            <i class="fas fa-clipboard-check me-2 text-primary"></i>Test Taking
+          </h1>
+          <button class="btn btn-danger" onclick="submitTest()">
+            <i class="fas fa-check-double me-1"></i>Submit Test </button>
+        </div>
+        <!-- Test Info -->
+        <div class="card mb-4">
+          <div class="card-body" id="testInfo">
+            <div class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Questions -->
+        <div id="questionsContainer">
+          <!-- Questions will be loaded here -->
+        </div>
+        <!-- Navigation -->
+        <div class="card mt-4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <button class="btn btn-outline-primary" id="prevBtn" onclick="previousQuestion()" disabled>
+                <i class="fas fa-chevron-left me-1"></i>Previous </button>
+              <span class="badge bg-primary fs-6" id="questionCounter">1 / 1</span>
+              <button class="btn btn-outline-primary" id="nextBtn" onclick="nextQuestion()"> Next<i
+                  class="fas fa-chevron-right ms-1"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:inline="javascript">
+    const testId = /*[[${testId}]]*/ 0;
+    let testData = null;
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let answers = {};
+    let timerInterval = null;
+    let timeRemaining = 0;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      loadTest();
+    });
+
+    async function loadTest() {
+      try {
+        const res = await fetch(`/api/student/tests/${testId}/start`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+        const json = await res.json();
+
+        if (!json.success || !json.data) {
+          alert('Cannot start test. It may have already been taken or is not available.');
+          window.location.href = '/student/tests';
+          return;
+        }
+
+        testData = json.data.test;
+        questions = json.data.questions || [];
+        timeRemaining = (testData.durationMinutes || 60) * 60;
+
+        displayTestInfo();
+        displayQuestion(0);
+        startTimer();
+      } catch (error) {
+        console.error('Error loading test:', error);
+        alert('Error loading test');
+        window.location.href = '/student/tests';
+      }
+    }
+
+    function displayTestInfo() {
+      const container = document.getElementById('testInfo');
+      container.innerHTML = `
+        <h4>${escapeHtml(testData.testName || 'Test')}</h4>
+        <div class="row text-center mt-3">
+          <div class="col-4">
+            <small class="text-muted d-block">Duration</small>
+            <strong>${testData.durationMinutes || 0} minutes</strong>
+          </div>
+          <div class="col-4">
+            <small class="text-muted d-block">Total Questions</small>
+            <strong>${questions.length}</strong>
+          </div>
+          <div class="col-4">
+            <small class="text-muted d-block">Passing Score</small>
+            <strong>${testData.passingScore || 60}%</strong>
+          </div>
+        </div>
+      `;
+    }
+
+    function displayQuestion(index) {
+      if (index < 0 || index >= questions.length) return;
+      currentQuestionIndex = index;
+
+      const question = questions[index];
+      const container = document.getElementById('questionsContainer');
+
+      let optionsHtml = '';
+      if (question.questionType === 'MULTIPLE_CHOICE') {
+        const options = question.options || [];
+        optionsHtml = options.map((opt, optIndex) => `
+          <div class="option-item ${answers[question.questionId] === optIndex ? 'selected' : ''}" 
+               onclick="selectOption(${question.questionId}, ${optIndex})">
+            <input type="radio" name="question-${question.questionId}" value="${optIndex}" 
+                   ${answers[question.questionId] === optIndex ? 'checked' : ''} onchange="selectOption(${question.questionId}, ${optIndex})">
+            <label class="ms-2">${escapeHtml(opt.text || '')}</label>
+          </div>
+        `).join('');
+      } else {
+        optionsHtml = `
+          <textarea class="form-control" rows="4" 
+                    onchange="setAnswer(${question.questionId}, this.value)"
+                    placeholder="Enter your answer here...">${answers[question.questionId] || ''}</textarea>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="card question-card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <h5>Question ${index + 1} of ${questions.length}</h5>
+              <span class="badge bg-info">${question.points || 1} point(s)</span>
+            </div>
+            <p class="lead mb-4">${escapeHtml(question.questionText || '')}</p>
+            <div>
+              ${optionsHtml}
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('questionCounter').textContent = `${index + 1} / ${questions.length}`;
+      document.getElementById('prevBtn').disabled = index === 0;
+      document.getElementById('nextBtn').disabled = index >= questions.length - 1;
+    }
+
+    function selectOption(questionId, optionIndex) {
+      answers[questionId] = optionIndex;
+      displayQuestion(currentQuestionIndex);
+    }
+
+    function setAnswer(questionId, answer) {
+      answers[questionId] = answer;
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < questions.length - 1) {
+        displayQuestion(currentQuestionIndex + 1);
+      }
+    }
+
+    function previousQuestion() {
+      if (currentQuestionIndex > 0) {
+        displayQuestion(currentQuestionIndex - 1);
+      }
+    }
+
+    function startTimer() {
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          alert('Time is up! Submitting your test...');
+          submitTest();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeRemaining / 60);
+      const seconds = timeRemaining % 60;
+      document.getElementById('timerDisplay').textContent =
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+      if (timeRemaining <= 300) { // 5 minutes
+        document.getElementById('timerAlert').style.display = 'block';
+        document.getElementById('timerAlert').className = 'alert alert-danger timer-alert';
+      } else if (timeRemaining <= 600) { // 10 minutes
+        document.getElementById('timerAlert').style.display = 'block';
+        document.getElementById('timerAlert').className = 'alert alert-warning timer-alert';
+      }
+    }
+
+    async function submitTest() {
+      if (!confirm('Are you sure you want to submit the test? You cannot change your answers after submission.')) {
+        return;
+      }
+
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+
+      try {
+        const res = await fetch(`/api/student/tests/${testId}/submit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ answers })
+        });
+
+        const json = await res.json();
+
+        if (json.success) {
+          window.location.href = `/student/tests/${testId}/result`;
+        } else {
+          alert(json.message || 'Failed to submit test');
+        }
+      } catch (error) {
+        console.error('Error submitting test:', error);
+        alert('Error submitting test');
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Warn before leaving
+    window.addEventListener('beforeunload', function (e) {
+      if (timerInterval) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,1 +1,4 @@
 <!-- # Student layout -->
+<div id="flash-message" th:if="${flashMessage != null}" th:attr="data-type=${flashType},data-message=${flashMessage}">
+</div>
+<script src="/js/common/notification.js"></script>

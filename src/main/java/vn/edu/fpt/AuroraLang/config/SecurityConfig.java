@@ -45,7 +45,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**", "/uploads/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN") // <--- CHẶN VIEW ADMIN
                         .requestMatchers("/", "/home", "/about", "/contact").permitAll()
@@ -57,6 +57,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**", "/api/public/**").permitAll()
                         // ✅ Public course APIs
                         .requestMatchers("/api/courses/public/**").permitAll()
+                        // ✅ Public class APIs
+                        .requestMatchers("/api/classes/public/**").permitAll()
                         // ✅ VNPay create + return (public)
                         .requestMatchers("/api/payments/create").permitAll()
                         .requestMatchers("/api/payments/vnpay-return").permitAll()

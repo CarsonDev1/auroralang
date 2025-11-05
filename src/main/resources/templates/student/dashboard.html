@@ -356,10 +356,25 @@
           // Update statistics
           document.getElementById('totalCourses').textContent = courses.length;
 
-          // Mock data for other stats
-          document.getElementById('totalClasses').textContent = Math.floor(Math.random() * 10) + 1;
-          document.getElementById('totalFlashcards').textContent = Math.floor(Math.random() * 100) + 20;
-          document.getElementById('overallProgress').textContent = Math.floor(Math.random() * 40) + 60 + '%';
+          // Real counts
+          try {
+            const classesRes = await fetch('/api/student/classes?page=0&size=1', { credentials: 'include' });
+            if (classesRes.ok) {
+              const classesJson = await classesRes.json();
+              document.getElementById('totalClasses').textContent = classesJson?.data?.totalElements ?? 0;
+            }
+          } catch { }
+
+          try {
+            const fcRes = await fetch('/api/flashcards/my-flashcards?page=0&size=1', { credentials: 'include' });
+            if (fcRes.ok) {
+              const fcJson = await fcRes.json();
+              document.getElementById('totalFlashcards').textContent = fcJson?.data?.totalElements ?? 0;
+            }
+          } catch { }
+
+          // Progress: placeholder from server later; set to 0% if unavailable
+          document.getElementById('overallProgress').textContent = '0%';
 
         } else {
           console.error('Failed to load courses');

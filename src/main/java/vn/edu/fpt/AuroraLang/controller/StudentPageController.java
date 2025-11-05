@@ -68,6 +68,12 @@ public class StudentPageController {
         return "student/tests/test-review";
     }
 
+    @GetMapping("/tests/{testId}/speaking")
+    public String speakingTest(@PathVariable Integer testId, Model model) {
+        model.addAttribute("testId", testId);
+        return "student/tests/speaking-test";
+    }
+
     // Schedule (Iteration 3)
     @GetMapping("/schedule")
     public String schedule() { return "student/schedule/schedule"; }

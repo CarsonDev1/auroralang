@@ -68,6 +68,12 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(resp));
     }
 
+    @GetMapping("/public/{classId}")
+    public ResponseEntity<ApiResponse<ClassResponse>> getPublicClass(@PathVariable Integer classId) {
+        ClassResponse classResponse = classService.getById(classId);
+        return ResponseEntity.ok(ApiResponse.success(classResponse));
+    }
+
     @GetMapping("/{classId}")
     @PreAuthorize("hasAnyRole('MANAGER','ADMIN','TEACHER')")
     public ResponseEntity<ApiResponse<ClassResponse>> getClass(@PathVariable Integer classId) {

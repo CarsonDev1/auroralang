@@ -121,6 +121,7 @@
       const fac = document.getElementById('f-active');
       const btnToggle = document.getElementById('btnToggle');
       const roleSelect = document.getElementById('roleSelect');
+      let currentRoleName = '';
 
       let allRoles = [];
       let userRoles = [];
@@ -134,9 +135,9 @@
         const userJson = await userRes.json();
         const rolesJson = await rolesRes.json();
         const userRolesJson = await userRolesRes.json();
-        if (!userJson.success) { alert(userJson.message || 'Load failed'); return; }
-        if (!rolesJson.success) { alert(rolesJson.message || 'Load roles failed'); return; }
-        if (!userRolesJson.success) { alert(userRolesJson.message || 'Load user roles failed'); return; }
+        if (!userJson.success) { notifyError(userJson.message || 'Load failed'); return; }
+        if (!rolesJson.success) { notifyError(rolesJson.message || 'Load roles failed'); return; }
+        if (!userRolesJson.success) { notifyError(userRolesJson.message || 'Load user roles failed'); return; }
         const u = userJson.data; allRoles = rolesJson.data || []; userRoles = userRolesJson.data || [];
         fid.value = u.userId; fun.value = u.username; fem.value = u.email;
         ffn.value = u.fullName || ''; fph.value = u.phone || ''; fad.value = u.address || '';
@@ -147,22 +148,52 @@
         // Populate single-select role dropdown
         roleSelect.innerHTML = allRoles.map(r => `<option value="${r}">${r}</option>`).join('');
         if (userRoles.length > 0) {
-          roleSelect.value = userRoles[0];
+          const target = (userRoles[0] || '').toString().trim().toUpperCase();
+          const match = Array.from(roleSelect.options).find(o => o.value.toString().trim().toUpperCase() === target);
+          roleSelect.value = match ? match.value : (allRoles[0] || '');
+          currentRoleName = match ? match.value : (allRoles[0] || '');
+        } else if (allRoles.length > 0) {
+          roleSelect.value = allRoles[0];
+          currentRoleName = allRoles[0];
         }
+
+        updateSaveRoleButtonState();
+      }
+
+      function updateSaveRoleButtonState() {
+        const selected = (roleSelect.value || '').toString().trim().toUpperCase();
+        const current = (currentRoleName || '').toString().trim().toUpperCase();
+        const isSame = selected === current;
+        document.getElementById('saveRolesBtn').disabled = isSame;
       }
 
       btnToggle.addEventListener('click', async () => {
         const currentActive = fac.value === 'true';
         const newActive = !currentActive;
-        await fetch(`/api/admin/users/${id}/${newActive ? 'activate' : 'deactivate'}`, { method: 'PATCH' });
-        load();
+        const res = await fetch(`/api/admin/users/${id}/${newActive ? 'activate' : 'deactivate'}`, { method: 'PATCH' });
+        const json = await res.json().catch(() => ({}));
+        if (res.ok && json && json.success) {
+          notifySuccess(json.message || (newActive ? 'User activated' : 'User deactivated'));
+          load();
+        } else {
+          notifyError((json && json.message) || 'Update status failed');
+        }
       });
+
+      roleSelect.addEventListener('change', updateSaveRoleButtonState);
 
       document.getElementById('saveRolesBtn').addEventListener('click', async () => {
         const selectedRole = roleSelect.value;
         const res = await fetch(`/api/admin/users/${id}/roles`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify([selectedRole]) });
         const json = await res.json();
-        if (!json.success) { alert(json.message || 'Update roles failed'); return; }
+        if (!json.success) { notifyError(json.message || 'Update roles failed'); return; }
+        notifySuccess('Role updated successfully');
+        // Optimistically reflect selection immediately
+        const sel = (selectedRole || '').toString().trim();
+        const opt = Array.from(roleSelect.options).find(o => o.value.toString().trim().toUpperCase() === sel.toUpperCase());
+        if (opt) roleSelect.value = opt.value;
+        currentRoleName = roleSelect.value;
+        updateSaveRoleButtonState();
         load();
       });
 
@@ -172,12 +203,14 @@
         const payload = { fullName: ffn.value, phone: fph.value, address: fad.value, isActive: isActive };
         const res = await fetch(`/api/admin/users/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         const json = await res.json();
-        if (!json.success) { alert(json.message || 'Update failed'); return; }
+        if (!json.success) { notifyError(json.message || 'Update failed'); return; }
+        notifySuccess('User saved successfully');
         load();
       });
 
       load();
     </script>
+    <script src="/js/common/notification.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </main>
   </div>

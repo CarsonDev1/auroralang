@@ -110,7 +110,7 @@
         if (q) url.searchParams.set('q', q);
         const res = await fetch(url);
         const json = await res.json();
-        if (!json.success) { alert(json.message || 'Load failed'); return; }
+        if (!json.success) { notifyError(json.message || 'Load failed'); return; }
         const p = json.data;
         document.getElementById('tbody').innerHTML = p.content.map(u => `
       <tr>
@@ -139,11 +139,18 @@
         }
       }
       async function toggle(id, active) {
-        await fetch(`/api/admin/users/${id}/${active ? 'activate' : 'deactivate'}`, { method: 'PATCH' });
-        load(0);
+        const res = await fetch(`/api/admin/users/${id}/${active ? 'activate' : 'deactivate'}`, { method: 'PATCH' });
+        const json = await res.json().catch(() => ({}));
+        if (res.ok && json && json.success) {
+          notifySuccess(json.message || (active ? 'User activated' : 'User deactivated'));
+          load(0);
+        } else {
+          notifyError((json && json.message) || 'Update status failed');
+        }
       }
       load();
     </script>
+    <script src="/js/common/notification.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

@@ -97,7 +97,7 @@ public class Test {
     private Set<UserTestAttempt> attempts = new HashSet<>();
     
     public enum TestType {
-        QUIZ, MIDTERM, FINAL, PRACTICE
+        QUIZ, MIDTERM, FINAL, PRACTICE, SPEAKING
     }
 }
 

@@ -189,8 +189,25 @@
           return;
         }
 
-        grid.innerHTML = json.data.content.map(l => {
-          const progress = Math.floor(Math.random() * 100);
+        grid.innerHTML = await Promise.all(json.data.content.map(async (l) => {
+          // Load progress for this lesson
+          let progress = 0;
+          try {
+            const progressRes = await fetch(`/api/dashboard/lesson/${l.lessonId}/progress`, {
+              credentials: 'include'
+            });
+            if (progressRes.ok) {
+              const progressJson = await progressRes.json();
+              if (progressJson.success && progressJson.data) {
+                progress = progressJson.data.progressPercentage != null
+                  ? Math.round(progressJson.data.progressPercentage)
+                  : 0;
+              }
+            }
+          } catch (error) {
+            console.error(`Error loading progress for lesson ${l.lessonId}:`, error);
+          }
+
           return `
             <div class="col-lg-4 col-md-6 mb-4">
               <div class="card lesson-card">
@@ -223,7 +240,7 @@
               </div>
             </div>
           `;
-        }).join('');
+        })).then(htmls => htmls.join(''));
       } catch (error) {
         console.error('Error loading lessons:', error);
         document.getElementById('lessonsGrid').innerHTML = `

@@ -397,44 +397,99 @@
     function initializeProgressChart() {
       const ctx = document.getElementById('progressChart').getContext('2d');
 
-      // Mock progress data
-      const progressData = {
-        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
-        datasets: [{
-          label: 'Lessons Completed',
-          data: [2, 5, 8, 12, 15, 18],
-          borderColor: '#667eea',
-          backgroundColor: 'rgba(102, 126, 234, 0.1)',
-          tension: 0.4,
-          fill: true
-        }, {
-          label: 'Flashcards Studied',
-          data: [10, 25, 40, 60, 80, 95],
-          borderColor: '#f093fb',
-          backgroundColor: 'rgba(240, 147, 251, 0.1)',
-          tension: 0.4,
-          fill: true
-        }]
-      };
-
-      progressChart = new Chart(ctx, {
-        type: 'line',
-        data: progressData,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'top'
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true
-            }
+      // Load progress data from API
+      fetch('/api/dashboard/student/progress?weeks=6', {
+        method: 'GET',
+        credentials: 'include'
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to load progress data');
           }
-        }
-      });
+          return response.json();
+        })
+        .then(result => {
+          const progressData = result.data;
+
+          const chartData = {
+            labels: progressData.labels || ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+            datasets: [{
+              label: 'Lessons Completed',
+              data: progressData.lessonsCompleted || [0, 0, 0, 0, 0, 0],
+              borderColor: '#667eea',
+              backgroundColor: 'rgba(102, 126, 234, 0.1)',
+              tension: 0.4,
+              fill: true
+            }, {
+              label: 'Flashcards Studied',
+              data: progressData.flashcardsStudied || [0, 0, 0, 0, 0, 0],
+              borderColor: '#f093fb',
+              backgroundColor: 'rgba(240, 147, 251, 0.1)',
+              tension: 0.4,
+              fill: true
+            }]
+          };
+
+          progressChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'top'
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        })
+        .catch(error => {
+          console.error('Error loading progress data:', error);
+          // Fallback to empty chart
+          const emptyData = {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+            datasets: [{
+              label: 'Lessons Completed',
+              data: [0, 0, 0, 0, 0, 0],
+              borderColor: '#667eea',
+              backgroundColor: 'rgba(102, 126, 234, 0.1)',
+              tension: 0.4,
+              fill: true
+            }, {
+              label: 'Flashcards Studied',
+              data: [0, 0, 0, 0, 0, 0],
+              borderColor: '#f093fb',
+              backgroundColor: 'rgba(240, 147, 251, 0.1)',
+              tension: 0.4,
+              fill: true
+            }]
+          };
+
+          progressChart = new Chart(ctx, {
+            type: 'line',
+            data: emptyData,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'top'
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        });
     }
   </script>
 </body>

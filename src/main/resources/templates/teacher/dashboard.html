@@ -311,13 +311,19 @@
     async function loadDashboardData() {
       try {
         // Load teacher's classes
-        const response = await fetch('/api/classes/teacher/my-classes?size=5', {
+        const classesResponse = await fetch('/api/classes/teacher/my-classes?size=5', {
           method: 'GET',
           credentials: 'include'
         });
 
-        if (response.ok) {
-          const result = await response.json();
+        // Load teacher statistics
+        const statsResponse = await fetch('/api/dashboard/teacher/statistics', {
+          method: 'GET',
+          credentials: 'include'
+        });
+
+        if (classesResponse.ok) {
+          const result = await classesResponse.json();
           const classes = result.data.content;
 
           // Update statistics
@@ -331,8 +337,21 @@
         } else {
           console.error('Failed to load dashboard data');
         }
+
+        if (statsResponse.ok) {
+          const statsResult = await statsResponse.json();
+          const stats = statsResult.data;
+          document.getElementById('totalFlashcards').textContent = stats.totalFlashcards || 0;
+          document.getElementById('totalLessons').textContent = stats.totalLessons || 0;
+        } else {
+          console.error('Failed to load teacher statistics');
+          document.getElementById('totalFlashcards').textContent = '0';
+          document.getElementById('totalLessons').textContent = '0';
+        }
       } catch (error) {
         console.error('Error loading dashboard data:', error);
+        document.getElementById('totalFlashcards').textContent = '0';
+        document.getElementById('totalLessons').textContent = '0';
       }
     }
 
@@ -342,10 +361,6 @@
 
       document.getElementById('totalClasses').textContent = totalClasses;
       document.getElementById('totalStudents').textContent = totalStudents;
-
-      // Mock data for flashcards and lessons
-      document.getElementById('totalFlashcards').textContent = Math.floor(Math.random() * 50) + 10;
-      document.getElementById('totalLessons').textContent = Math.floor(Math.random() * 30) + 5;
     }
 
     function updateRecentClassesTable(classes) {

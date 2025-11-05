@@ -1,14 +1,5 @@
 package vn.edu.fpt.AuroraLang.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import vn.edu.fpt.AuroraLang.entity.*;
-import vn.edu.fpt.AuroraLang.repository.*;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -18,6 +9,24 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import vn.edu.fpt.AuroraLang.entity.SpeakingTestAnswer;
+import vn.edu.fpt.AuroraLang.entity.SpeakingTestAttempt;
+import vn.edu.fpt.AuroraLang.entity.SpeakingTestQuestion;
+import vn.edu.fpt.AuroraLang.entity.Test;
+import vn.edu.fpt.AuroraLang.entity.User;
+import vn.edu.fpt.AuroraLang.repository.SpeakingTestAnswerRepository;
+import vn.edu.fpt.AuroraLang.repository.SpeakingTestAttemptRepository;
+import vn.edu.fpt.AuroraLang.repository.SpeakingTestQuestionRepository;
+import vn.edu.fpt.AuroraLang.repository.TestRepository;
+import vn.edu.fpt.AuroraLang.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -86,14 +95,17 @@ public class SpeakingTestService {
         answer.setAudioUrl(audioUrl);
         answer.setDurationSeconds(durationSeconds);
         
-        // Mock evaluation - In production, integrate with Whisper API or similar
-        answer.setTranscribedText("Transcribed text from audio"); // Mock
-        answer.setAccuracyScore(BigDecimal.valueOf(85.0)); // Mock
-        answer.setFluencyScore(BigDecimal.valueOf(80.0)); // Mock
-        answer.setScore(question.getPoints().multiply(BigDecimal.valueOf(0.825))); // Mock
-        answer.setFeedback("Good pronunciation. Try to improve fluency."); // Mock
-
-        return answerRepository.save(answer);
+        // TODO: Integrate with speech recognition API (e.g., OpenAI Whisper, Google Speech-to-Text)
+        // For now, throw exception to indicate this feature is not yet implemented
+        // In production, implement:
+        // 1. Call speech recognition API to transcribe audio
+        // 2. Evaluate pronunciation accuracy and fluency
+        // 3. Calculate score based on evaluation
+        // 4. Generate feedback based on analysis
+        throw new UnsupportedOperationException(
+            "Speaking test evaluation is not yet implemented. " +
+            "Please integrate with a speech recognition API (e.g., OpenAI Whisper) to evaluate audio submissions."
+        );
     }
 
     @Transactional

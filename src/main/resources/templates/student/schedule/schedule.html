@@ -403,47 +403,48 @@
       document.getElementById('currentWeek').textContent = `${startStr} - ${endStr}, ${year}`;
     }
 
-    function showEventDetail(eventName) {
+    function showEventDetail(sessionId) {
       const modal = new bootstrap.Modal(document.getElementById('eventModal'));
-      document.getElementById('eventTitle').textContent = eventName;
 
-      // Mock event details
-      const eventDetails = {
-        'JavaScript Advanced': {
-          time: '8:00 AM - 10:00 AM',
-          room: 'Room A101',
-          teacher: 'John Smith',
-          description: 'Advanced JavaScript concepts including closures, prototypes, and async programming.'
-        },
-        'React Fundamentals': {
-          time: '9:00 AM - 11:00 AM',
-          room: 'Room C303',
-          teacher: 'Jane Doe',
-          description: 'Introduction to React components, state management, and hooks.'
-        },
-        'Node.js Basics': {
-          time: '8:00 AM - 10:00 AM',
-          room: 'Room B202',
-          teacher: 'Mike Johnson',
-          description: 'Server-side JavaScript with Node.js and Express framework.'
-        },
-        'Database Design': {
-          time: '2:00 PM - 4:00 PM',
-          room: 'Room D404',
-          teacher: 'Sarah Wilson',
-          description: 'Relational database design principles and SQL optimization.'
-        }
-      };
+      // Load session details from API
+      fetch(`/api/dashboard/schedule/session/${sessionId}`, {
+        method: 'GET',
+        credentials: 'include'
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to load session details');
+          }
+          return response.json();
+        })
+        .then(result => {
+          const details = result.data;
+          document.getElementById('eventTitle').textContent = details.sessionName || 'Session Details';
 
-      const details = eventDetails[eventName] || {};
-      document.getElementById('eventDetails').innerHTML = `
-                <p><strong>Time:</strong> ${details.time || 'TBD'}</p>
-                <p><strong>Room:</strong> ${details.room || 'TBD'}</p>
-                <p><strong>Teacher:</strong> ${details.teacher || 'TBD'}</p>
-                <p><strong>Description:</strong> ${details.description || 'No description available'}</p>
-            `;
+          const timeDisplay = details.time || 'TBD';
+          const roomDisplay = details.room || 'TBD';
+          const teacherDisplay = details.teacher || 'TBD';
+          const descriptionDisplay = details.description || 'No description available';
 
-      modal.show();
+          document.getElementById('eventDetails').innerHTML = `
+          <p><strong>Time:</strong> ${timeDisplay}</p>
+          <p><strong>Room:</strong> ${roomDisplay}</p>
+          <p><strong>Teacher:</strong> ${teacherDisplay}</p>
+          <p><strong>Date:</strong> ${details.date || 'TBD'}</p>
+          <p><strong>Description:</strong> ${descriptionDisplay}</p>
+          ${details.onlineMeetingUrl ? `<p><strong>Online Meeting:</strong> <a href="${details.onlineMeetingUrl}" target="_blank">Join Meeting</a></p>` : ''}
+        `;
+
+          modal.show();
+        })
+        .catch(error => {
+          console.error('Error loading session details:', error);
+          document.getElementById('eventTitle').textContent = 'Error';
+          document.getElementById('eventDetails').innerHTML = `
+          <p class="text-danger">Failed to load session details. Please try again later.</p>
+        `;
+          modal.show();
+        });
     }
   </script>
 </body>
